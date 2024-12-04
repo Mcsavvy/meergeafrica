@@ -1,11 +1,11 @@
 import { stackMiddlewares } from "@/middlewares/stackhandler";
 import { PublicMiddleware } from "./middlewares/public";
-import { AuthMiddleware } from "./middlewares/authentication";
+// import { AuthMiddleware } from "./middlewares/authentication";
 
 const middlewares = [
-    PublicMiddleware,
-    AuthMiddleware,
-]
+  PublicMiddleware,
+  // AuthMiddleware,
+];
 
 export default stackMiddlewares(middlewares);
 
