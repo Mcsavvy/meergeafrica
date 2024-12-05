@@ -18,7 +18,36 @@ body {
   }
 }
 
-
 label.required {
   @apply after:content-['*'] after:text-secondary after:ml-1;
+}
+
+/* For Webkit browsers (Chrome, Safari) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #d1d5db transparent;
+}
+
+/* For horizontal scroll containers like the top menu */
+.overflow-x-auto::-webkit-scrollbar {
+  height: 6px;
 }
