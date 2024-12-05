@@ -51,3 +51,7 @@ label.required {
 .overflow-x-auto::-webkit-scrollbar {
   height: 6px;
 }
+
+.scrollbar-none {
+  scrollbar-width: none;
+}
