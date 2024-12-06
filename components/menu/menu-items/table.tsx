@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/table";
 import { flexRender, type Table as ReactTable } from "@tanstack/react-table";
 import { MenuItem } from "@/types/menu";
-import menuItemsColumns from "./columns";
+import Image from "next/image";
 
 export default function MenuItemsTable({
   table,
@@ -47,11 +47,16 @@ export default function MenuItemsTable({
             ))
           ) : (
             <TableRow>
-              <TableCell
-                colSpan={menuItemsColumns.length}
-                className="h-24 text-center"
-              >
-                No results.
+              <TableCell colSpan={100} className="h-44">
+                <div className="flex flex-col justify-center items-center">
+                  <Image
+                    src="/assets/svgs/plate.svg"
+                    alt="No results"
+                    width={100}
+                    height={150}
+                  />
+                  <p>You don&apos;t have any menu item</p>
+                </div>
               </TableCell>
             </TableRow>
           )}
