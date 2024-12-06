@@ -66,6 +66,7 @@ document.addEventListener("click", (e) => {
     } else {
       e.preventDefault();
       const handlers = modalRegistry.get(modalId);
+      console.log(`Opening modal ${modalId}`);
       handlers?.open();
     }
   }
@@ -81,19 +82,29 @@ document.addEventListener("click", (e) => {
     } else {
       e.preventDefault();
       const handlers = modalRegistry.get(modalId);
-      if (handlers) {
-        handlers.toggle();
-      }
+      console.log(`Toggling modal ${modalId}`);
+      handlers?.toggle();
     }
   }
 
   if (hide) {
-    const modal = hide.closest("[role=dialog]");
-    if (modal) {
-      const handlers = modalRegistry.get(modal.id);
-      if (handlers) {
-        handlers.close();
-      }
+    let modalId = hide.getAttribute("data-modal-hide");
+    if ([null, undefined, "true"].includes(modalId)) {
+      const modal = hide.closest("[role=dialog]");
+      modalId = modal?.id || null;
+    }
+    if (
+      !modalId ||
+      !modalRegistry.has(modalId) ||
+      modalRegistry.get(modalId) === undefined
+    ) {
+      console.error(`Modal with id ${modalId} not found`);
+      console.log(typeof modalId);
+    } else {
+      e.preventDefault();
+      const handlers = modalRegistry.get(modalId);
+      console.log(`Closing modal ${modalId}`);
+      handlers?.close();
     }
   }
 });
@@ -140,12 +151,15 @@ const Modal: ModalComponent = ({
 
   // Sync with external state if provided
   useEffect(() => {
-    if (externalIsOpen !== undefined) {
+    if (externalIsOpen === true) {
       handleOpen();
+    } else if (externalIsOpen === false) {
+      handleClose();
     }
-  }, [externalIsOpen, handleOpen]);
+  }, [externalIsOpen, handleOpen, handleClose]);
 
   useEffect(() => {
+    console.log(`Modal ${id} is ${isOpen ? "open" : "closed"}`);
     if (isOpen) {
       setIsAnimating(true);
       document.body.style.overflow = "hidden";
@@ -156,7 +170,7 @@ const Modal: ModalComponent = ({
       document.body.style.overflow = "unset";
       return () => clearTimeout(timeout);
     }
-  }, [isOpen]);
+  }, [isOpen, id]);
 
   if (!isOpen && !isAnimating) return null as React.ReactNode;
 
