@@ -373,7 +373,6 @@ const SidebarItem = ({
 }: SidebarItemProps) => {
   const pathname = usePathname();
   const isActive = pathname === path;
-  console.log(pathname);
 
   return (
     <Link
