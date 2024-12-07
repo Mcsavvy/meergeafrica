@@ -7,3 +7,17 @@ export type MenuItem = {
   readyTime: string;
   image: string;
 };
+
+export interface AddOn {
+  id: string;
+  name: string;
+  price: number;
+  image?: string;
+}
+
+export interface PairedItem {
+  id: string;
+  name: string;
+  price: number;
+  image?: string;
+}
