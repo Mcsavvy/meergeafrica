@@ -49,7 +49,7 @@ const unregisterModal = (id: string) => {
 };
 
 // Global click handler
-document.addEventListener("click", (e) => {
+const documentClickHandler = (e: MouseEvent) => {
   const target = e.target as HTMLElement | null;
   const trigger = target?.closest("[data-modal-trigger]");
   const toggle = target?.closest("[data-modal-toggle]");
@@ -107,7 +107,7 @@ document.addEventListener("click", (e) => {
       handlers?.close();
     }
   }
-});
+};
 
 const Modal: ModalComponent = ({
   id,
@@ -253,5 +253,42 @@ Modal.Footer = ({ children, className = "" }) => (
 );
 
 Modal.Footer.displayName = "Modal.Footer";
+
+let isModalSetupRendered = false;
+
+export const ModalSetup = () => {
+  useEffect(() => {
+    if (!isModalSetupRendered) {
+      document.addEventListener("click", documentClickHandler);
+      isModalSetupRendered = true;
+    }
+    return () => {
+      if (isModalSetupRendered) {
+        document.removeEventListener("click", documentClickHandler);
+        isModalSetupRendered = false;
+      }
+    };
+  }, []);
+  return null as React.ReactNode;
+};
+
+export const useModal = (id: string) => {
+  const open = useCallback(() => {
+    const handlers = modalRegistry.get(id);
+    handlers?.open();
+  }, [id]);
+
+  const close = useCallback(() => {
+    const handlers = modalRegistry.get(id);
+    handlers?.close();
+  }, [id]);
+
+  const toggle = useCallback(() => {
+    const handlers = modalRegistry.get(id);
+    handlers?.toggle();
+  }, [id]);
+
+  return { open, close, toggle };
+};
 
 export default Modal;
