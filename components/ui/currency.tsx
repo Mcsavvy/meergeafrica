@@ -3,48 +3,32 @@ import React from "react";
 import { cn } from "@/lib/utils";
 
 type NairaInputProps = React.ComponentProps<"input"> & {
-  value?: string;
-  onChange?: (value: string) => void;
+  value?: number;
+  onChange?: (value: number) => void;
 };
 
 export const NairaInput = React.forwardRef<HTMLInputElement, NairaInputProps>(
   ({ className, onChange, value, ...props }, ref) => {
-    const formatValue = (val: string) => {
-      // Remove non-digit characters except decimal point
-      let cleaned = val.replace(/[^0-9.]/g, "");
-
-      // Ensure only one decimal point
-      const parts = cleaned.split(".");
-      if (parts.length > 2) {
-        cleaned = `${parts[0]}.${parts[1]}`;
-      }
-
-      // Limit to 2 decimal places
-      if (parts.length === 2 && parts[1].length > 2) {
-        cleaned = `${parts[0]}.${parts[1].slice(0, 2)}`;
-      }
-
-      // Add thousand separators
-      const [integer, decimal] = cleaned.split(".");
-      const formatted = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-
-      return `₦${formatted}${decimal ? `.${decimal}` : ""}`;
-    };
-
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const rawValue = e.target.value;
-      const formattedValue = formatValue(rawValue);
-      onChange?.(formattedValue);
+      const value = e.target.value;
+      if (onChange) {
+        onChange(parseFloat(value));
+      }
     };
 
     return (
-      <Input
-        value={value}
-        onChange={handleChange}
-        className={cn("font-mono", className)}
-        ref={ref}
-        {...props}
-      />
+      <div className="relative">
+        <Input
+          value={value}
+          onChange={handleChange}
+          className={cn("font-mono pl-10", className)}
+          ref={ref}
+          {...props}
+        />
+        <span className="absolute inset-y-0 left-2 flex items-center pr-3 text-sm text-gray-400">
+          NGN
+        </span>
+      </div>
     );
   }
 );
