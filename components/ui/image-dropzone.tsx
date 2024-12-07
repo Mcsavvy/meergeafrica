@@ -1,4 +1,5 @@
-import React, { useCallback, useState } from "react";
+"use client";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { X } from "lucide-react";
 import Image from "next/image";
@@ -7,12 +8,14 @@ type ImageDropzoneProps = {
   id?: string;
   name: string;
   required?: boolean;
+  value?: File;
   onChange?: (file: File) => void;
 };
 
 const ImageDropzone = ({
   id,
   name,
+  value,
   required,
   onChange,
 }: ImageDropzoneProps) => {
@@ -44,6 +47,18 @@ const ImageDropzone = ({
   const removeImage = () => {
     setPreview(null);
   };
+
+  useEffect(() => {
+    if (typeof value === "string") {
+      setPreview(value);
+    } else if (value) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setPreview(reader.result as string);
+      };
+      reader.readAsDataURL(value);
+    }
+  }, [value]);
 
   if (preview) {
     return (
