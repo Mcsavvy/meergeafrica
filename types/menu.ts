@@ -1,23 +1,21 @@
-export type MenuItem = {
+import {
+  AddOnFormSchema,
+  MenuItemFormSchema,
+  PairedItemFormSchema,
+} from "@/lib/zod/forms/menu";
+import { z } from "zod";
+
+export type MenuItem = Omit<z.infer<typeof MenuItemFormSchema>, "image"> & {
   id: string;
-  name: string;
-  price: number;
-  category: string;
-  status: "available" | "unlisted";
-  readyTime: string;
   image: string;
 };
 
-export interface AddOn {
+export type AddOn = Omit<z.infer<typeof AddOnFormSchema>, "image"> & {
   id: string;
-  name: string;
-  price: number;
-  image?: string;
-}
+  image: string;
+};
 
-export interface PairedItem {
+export type PairedItem = Omit<z.infer<typeof PairedItemFormSchema>, "image"> & {
   id: string;
-  name: string;
-  price: number;
-  image?: string;
-}
+  image: string;
+};
