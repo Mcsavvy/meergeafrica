@@ -55,3 +55,11 @@ label.required {
 .scrollbar-none {
   scrollbar-width: none;
 }
+
+.desktop-menu-link {
+  @apply hover:text-secondary transition-colors;
+}
+
+.mobile-menu-link {
+  @apply block py-2;
+}
