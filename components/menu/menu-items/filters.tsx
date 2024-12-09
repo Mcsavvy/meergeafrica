@@ -24,7 +24,7 @@ export function MenuItemsFilter({
         <Filter className="h-4 w-4" />
         <span className="hidden md:inline">Filter</span>
       </Button>
-      <Button variant="outline">
+      <Button variant="outline" data-modal-trigger="create-menu-item-modal">
         <Plus className="h-4 w-4 mr-1" />
         <span className="hidden md:inline">Add New Item</span>
       </Button>

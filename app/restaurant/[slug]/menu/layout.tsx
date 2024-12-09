@@ -1,4 +1,7 @@
 import Navbar from "@/components/ui/navbar";
+import { AddOnProvider } from "@/lib/contexts/addon-context";
+import { MenuItemsProvider } from "@/lib/contexts/menu-items-context";
+import { PairingProvider } from "@/lib/contexts/pairing-context";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -12,9 +15,13 @@ export default function MenuLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
-      <Navbar pageName="Menu" />
-      {children}
-    </>
+    <MenuItemsProvider>
+      <AddOnProvider>
+        <PairingProvider>
+          <Navbar pageName="Menu" />
+          {children}
+        </PairingProvider>
+      </AddOnProvider>
+    </MenuItemsProvider>
   );
 }

@@ -10,6 +10,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { formatDuration } from "@/lib/utils";
 
 const StatusBadge = ({ status }: { status: MenuItem["status"] }) => (
   <Badge
@@ -106,13 +107,14 @@ const menuItemsColumns: ColumnDef<MenuItem>[] = [
       <Button
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="px-0"
       >
         Item Name
-        <ArrowUpDown className="ml-2 h-4 w-4" />
+        <ArrowUpDown className="h-4 w-4" />
       </Button>
     ),
     cell: ({ row }) => (
-      <span className="font-medium ml-4">{row.getValue("name")}</span>
+      <span className="font-medium">{row.getValue("name")}</span>
     ),
   },
   {
@@ -147,6 +149,11 @@ const menuItemsColumns: ColumnDef<MenuItem>[] = [
   {
     accessorKey: "readyTime",
     header: "Ready in",
+    cell: ({ row }) => (
+      <p className="text-left pl-4">
+        {formatDuration(row.getValue("readyTime"))}
+      </p>
+    ),
   },
   {
     id: "actions",
