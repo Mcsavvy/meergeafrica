@@ -126,13 +126,13 @@ export const SelectedPairedItem = ({
   );
 };
 
-const SelectPairedItems = ({
-  value = [],
-  onChange,
-}: {
-  value?: PairedItem["id"][];
-  onChange: (items: PairedItem["id"][]) => void;
-}) => {
+const SelectPairedItems = React.forwardRef<
+  HTMLElement,
+  {
+    value?: PairedItem["id"][];
+    onChange: (items: PairedItem["id"][]) => void;
+  }
+>(({ value = [], onChange }) => {
   const pairedItems = usePairedItems(value);
 
   const handlePairedItemRemove = (pairedItemId: string) => {
@@ -163,6 +163,8 @@ const SelectPairedItems = ({
       </div>
     </>
   );
-};
+});
+
+SelectPairedItems.displayName = "SelectPairedItems";
 
 export default SelectPairedItems;

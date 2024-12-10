@@ -126,13 +126,13 @@ const SelectedAddOn = ({
   );
 };
 
-const SelectAddons = ({
-  value = [],
-  onChange,
-}: {
-  value?: AddOn["id"][];
-  onChange: (value: AddOn["id"][]) => void;
-}) => {
+const SelectAddons = React.forwardRef<
+  HTMLElement,
+  {
+    value?: AddOn["id"][];
+    onChange: (value: AddOn["id"][]) => void;
+  }
+>(({ value = [], onChange }) => {
   const addOns = useAddOns(value);
 
   const handleAddOnRemove = (addOnId: string) => {
@@ -158,6 +158,8 @@ const SelectAddons = ({
       </div>
     </>
   );
-};
+});
+
+SelectAddons.displayName = "SelectAddons";
 
 export default SelectAddons;
