@@ -1,7 +1,9 @@
+import { useContext } from "react";
 import NewOrdersTable, { OrderTableProps } from "./new-order";
 import SalesHistory, { SalesHistoryProps } from "./sales-history";
 import Stats, { StatsProps } from "./stats";
 import TopMenu, { TopMenuProps } from "./top-menu";
+import { RestaurantContext } from "@/lib/contexts/restaurant";
 
 export type DashboardProps = {
   restaurantName: string;
@@ -30,13 +32,13 @@ const Dashboard: React.FC<DashboardProps> = ({
   orders,
   sales,
   topMenuItems,
-  restaurantName,
 }) => {
+  const { name } = useContext(RestaurantContext);
   return (
     <DashboardContainer>
       <header>
         <h1 className="text-xl">
-          Welcome, <span className="font-semibold">{restaurantName}</span>
+          Welcome, <span className="font-semibold">{name}</span>
         </h1>
       </header>
       <Stats {...stats} />

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import "./globals.css";
 import { ModalSetup } from "@/components/ui/modal";
 
 export const metadata: Metadata = {
