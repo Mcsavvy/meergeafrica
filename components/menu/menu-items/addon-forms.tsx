@@ -52,6 +52,7 @@ export const CreateAddOnModal = () => {
     <Modal
       id="create-add-on-modal"
       isOpen={open}
+      layer="secondary"
       onClose={() => setOpen(false)}
       className="max-w-md"
     >
@@ -181,6 +182,7 @@ export const EditAddOnModal = () => {
     <Modal
       id="edit-add-on-modal"
       isOpen={open}
+      layer="secondary"
       onClose={() => setOpen(false)}
       className="max-w-md"
     >

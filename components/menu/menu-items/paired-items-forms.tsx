@@ -52,6 +52,7 @@ export const CreatePairedItemModal = () => {
     <Modal
       id="create-paired-item-modal"
       isOpen={open}
+      layer="secondary"
       onClose={() => setOpen(false)}
       className="max-w-md"
     >
@@ -191,6 +192,7 @@ export const EditPairedItemModal = () => {
     <Modal
       id="edit-paired-item-modal"
       isOpen={open}
+      layer="secondary"
       onClose={() => setOpen(false)}
       className="max-w-md"
     >
