@@ -14,6 +14,7 @@ import { formatDuration } from "@/lib/utils";
 import { useState } from "react";
 import EditMenuItem from "./edit-item";
 import { PopoverClose } from "@radix-ui/react-popover";
+import ViewMenuItem from "./view-item";
 
 const StatusBadge = ({ status }: { status: MenuItem["status"] }) => (
   <Badge
@@ -39,6 +40,7 @@ const MenuItemImage = ({ src, alt }: { src: string; alt: string }) => (
 
 const MenuItemActions: React.FC<MenuItem> = (item) => {
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false);
   return (
     <>
       <Popover>
@@ -54,6 +56,7 @@ const MenuItemActions: React.FC<MenuItem> = (item) => {
                 variant="link"
                 size="sm"
                 className="hover:text-secondary hover:no-underline"
+                onClick={() => setShowViewModal(true)}
               >
                 View
               </Button>
@@ -63,7 +66,9 @@ const MenuItemActions: React.FC<MenuItem> = (item) => {
                 variant="link"
                 size="sm"
                 className="hover:text-secondary hover:no-underline"
-                onClick={() => setShowEditModal(true)}
+                onClick={() => {
+                  setShowEditModal(true);
+                }}
               >
                 Update
               </Button>
@@ -82,6 +87,15 @@ const MenuItemActions: React.FC<MenuItem> = (item) => {
         menuItem={item}
         isOpen={showEditModal}
         onClose={() => setShowEditModal(false)}
+      />
+      <ViewMenuItem
+        menuItem={item}
+        isOpen={showViewModal}
+        onClose={() => setShowViewModal(false)}
+        onEdit={() => {
+          setShowViewModal(false);
+          setShowEditModal(true);
+        }}
       />
     </>
   );
