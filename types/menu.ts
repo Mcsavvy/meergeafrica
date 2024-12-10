@@ -12,10 +12,10 @@ export type MenuItem = Omit<z.infer<typeof MenuItemFormSchema>, "image"> & {
 
 export type AddOn = Omit<z.infer<typeof AddOnFormSchema>, "image"> & {
   id: string;
-  image: string;
+  image?: string;
 };
 
 export type PairedItem = Omit<z.infer<typeof PairedItemFormSchema>, "image"> & {
   id: string;
-  image: string;
+  image?: string;
 };
