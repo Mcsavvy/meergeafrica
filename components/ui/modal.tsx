@@ -183,7 +183,7 @@ const Modal: ModalComponent = ({
       className={`
         fixed inset-0 flex items-center justify-center
         ${isOpen ? "animate-fade-in" : "animate-fade-out"}
-        ${layer === "primary" ? "z-40" : "z-50"}
+        ${layer === "primary" ? "z-50" : "z-[60]"}
         bg-black bg-opacity-50 transition-opacity duration-300
       `}
       onClick={handleClose}
