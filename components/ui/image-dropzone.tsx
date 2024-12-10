@@ -10,7 +10,7 @@ type ImageDropzoneProps = {
   name: string;
   required?: boolean;
   value?: File;
-  onChange?: (file: File) => void;
+  onChange?: (file?: File) => void;
 };
 
 const ImageDropzone = ({
@@ -48,14 +48,16 @@ const ImageDropzone = ({
   };
 
   useEffect(() => {
+    console.log(`[ImageDropzone] value:`, value);
     if (typeof value === "string") {
       setPreview(value);
+      onChange?.(undefined);
     } else if (value) {
       convertToBase64(value).then((image) => {
         setPreview(image);
       });
     }
-  }, [value]);
+  }, [value, onChange]);
 
   if (preview) {
     return (
