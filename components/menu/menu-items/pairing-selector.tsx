@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import AsyncCreatableSelect from "react-select/async-creatable";
 import { Pencil, Trash2 } from "lucide-react";
 import { PairedItem } from "@/types/menu";
@@ -9,9 +9,8 @@ import {
   emitPairedItemSelected,
   emitPairedItemUpdate,
   onPairedItemSelected,
-  onPairedItemUpdated,
-  PairedItemUpdatedEvent,
 } from "@/lib/events/pairing-events";
+import { usePairedItems } from "@/lib/hooks/menu";
 
 interface PairedItemOption {
   value: string;
@@ -128,47 +127,33 @@ export const SelectedPairedItem = ({
 };
 
 const SelectPairedItems = ({
+  value = [],
   onChange,
 }: {
+  value?: PairedItem["id"][];
   onChange: (items: PairedItem["id"][]) => void;
 }) => {
-  const [selectedPairedItems, setSelectedPairedItems] = useState<PairedItem[]>(
-    []
-  );
+  const pairedItems = usePairedItems(value);
 
   const handlePairedItemRemove = (pairedItemId: string) => {
-    setSelectedPairedItems(
-      selectedPairedItems.filter((item) => item.id !== pairedItemId)
-    );
-  };
-
-  const handlePairedItemUpdated = (e: PairedItemUpdatedEvent) => {
-    setSelectedPairedItems((items) =>
-      items.map((item) =>
-        item.id === e.detail.pairedItem.id ? e.detail.pairedItem : item
-      )
+    onChange(
+      pairedItems
+        .filter((item) => item.id !== pairedItemId)
+        .map((item) => item.id)
     );
   };
 
   useEffect(() => {
     return onPairedItemSelected((e) => {
-      setSelectedPairedItems((items) => [...items, e.detail.pairedItem]);
+      onChange([...pairedItems.map((item) => item.id), e.detail.pairedItem.id]);
     });
-  }, []);
-
-  useEffect(() => {
-    onChange(selectedPairedItems.map((item) => item.id));
-  }, [selectedPairedItems, onChange]);
-
-  useEffect(() => {
-    return onPairedItemUpdated(handlePairedItemUpdated);
-  }, []);
+  }, [onChange, pairedItems]);
 
   return (
     <>
-      <PairingSelector selectedPairedItems={selectedPairedItems} />
+      <PairingSelector selectedPairedItems={pairedItems} />
       <div className="flex items-center flex-wrap gap-2">
-        {selectedPairedItems.map((item) => (
+        {pairedItems.map((item) => (
           <SelectedPairedItem
             pairedItem={item}
             key={item.id}
