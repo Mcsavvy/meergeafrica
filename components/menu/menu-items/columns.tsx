@@ -11,10 +11,11 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { formatDuration } from "@/lib/utils";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import EditMenuItem from "./edit-item";
 import { PopoverClose } from "@radix-ui/react-popover";
 import ViewMenuItem from "./view-item";
+import { useMenuItemsStore } from "@/lib/contexts/menu-items-context";
 
 const StatusBadge = ({ status }: { status: MenuItem["status"] }) => (
   <Badge
@@ -41,6 +42,14 @@ const MenuItemImage = ({ src, alt }: { src: string; alt: string }) => (
 const MenuItemActions: React.FC<MenuItem> = (item) => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
+  const { updateMenuItem } = useMenuItemsStore();
+
+  const listOrUnlist = useCallback(() => {
+    updateMenuItem(item, {
+      status: item.status === "available" ? "unlisted" : "available",
+    });
+  }, [item, updateMenuItem]);
+
   return (
     <>
       <Popover>
@@ -73,13 +82,16 @@ const MenuItemActions: React.FC<MenuItem> = (item) => {
                 Update
               </Button>
             </PopoverClose>
-            <Button
-              variant="link"
-              size="sm"
-              className="hover:text-secondary hover:no-underline"
-            >
-              {item.status === "available" ? "Unlist" : "List"}
-            </Button>
+            <PopoverClose asChild>
+              <Button
+                variant="link"
+                size="sm"
+                className="hover:text-secondary hover:no-underline"
+                onClick={listOrUnlist}
+              >
+                {item.status === "available" ? "Unlist" : "List"}
+              </Button>
+            </PopoverClose>
           </div>
         </PopoverContent>
       </Popover>
