@@ -20,6 +20,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { convertToBase64 } from "@/lib/utils";
 
 export const CreatePairedItemModal = () => {
   const { createPairedItem } = usePairingStore();
@@ -90,16 +91,13 @@ export const CreatePairedItemForm = ({
         price: data.price,
       });
     }
-
-    const reader = new FileReader();
-    reader.onload = () => {
+    convertToBase64(data.image).then((image) => {
       onCreatePairedItem({
         name: data.name,
         price: data.price,
-        image: reader.result as string,
+        image,
       });
-    };
-    reader.readAsDataURL(data.image);
+    });
   });
 
   return (
@@ -232,16 +230,13 @@ export const EditPairedItemForm = ({
         price: data.price,
       });
     }
-
-    const reader = new FileReader();
-    reader.onload = () => {
+    convertToBase64(data.image).then((image) => {
       onUpdatePairedItem({
         name: data.name,
         price: data.price,
-        image: reader.result as string,
+        image,
       });
-    };
-    reader.readAsDataURL(data.image);
+    });
   });
 
   return (
