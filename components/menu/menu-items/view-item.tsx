@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { formatDuration, formatPrice } from "@/lib/utils";
 import { useAddOns, usePairedItems } from "@/lib/hooks/menu";
+import { Edit } from "lucide-react";
 
 interface ViewMenuItemProps {
   menuItem: MenuItem;
@@ -30,11 +31,14 @@ const ViewMenuItem = ({
         isOpen={isOpen}
         onClose={onClose}
       >
-        <Modal.Header className="md:px-8 flex items-center justify-between">
-          <h2>Menu Item Details</h2>
-          <Button variant="outline" onClick={onEdit}>
-            Edit Item
-          </Button>
+        <Modal.Header>
+          <div className="flex items-center justify-start gap-2">
+            <h2>Menu Item Details</h2>
+            <Button variant="link" onClick={onEdit}>
+              <Edit className="!h-5 !w-5" />
+              <span className="sr-only">Edit menu item</span>
+            </Button>
+          </div>
         </Modal.Header>
         <Modal.Body className="md:p-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -98,57 +102,58 @@ const ViewMenuItem = ({
                 <p className="text-sm">{menuItem.ingredients}</p>
               </div>
 
-              {addOns.length > 0 && (
-                <div>
-                  <h4 className="font-semibold mb-2">Available Add-ons</h4>
-                  <div className="grid gap-3">
-                    {addOns.map((addon) => (
-                      <div key={addon.id} className="flex items-center gap-3">
-                        <div className="w-12 h-12 relative rounded-full overflow-hidden">
-                          <Image
-                            src={addon.image!}
-                            alt={addon.name}
-                            fill
-                            className="object-cover"
-                          />
+              <div className="grid grid-cols-1 md:grid-cols-2 mt-8">
+                {addOns.length > 0 && (
+                  <div>
+                    <h4 className="font-semibold mb-2">Available Add-ons</h4>
+                    <div className="grid gap-3">
+                      {addOns.map((addon) => (
+                        <div key={addon.id} className="flex items-center gap-3">
+                          <div className="w-12 h-12 relative rounded-full overflow-hidden">
+                            <Image
+                              src={addon.image!}
+                              alt={addon.name}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                          <div>
+                            <p className="font-medium">{addon.name}</p>
+                            <p className="text-sm text-muted-foreground">
+                              ₦{addon.price.toLocaleString()}
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-medium">{addon.name}</p>
-                          <p className="text-sm text-muted-foreground">
-                            ₦{addon.price.toLocaleString()}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
-
-              {pairedItems.length > 0 && (
-                <div>
-                  <h4 className="font-semibold mb-2">Best Paired With</h4>
-                  <div className="grid gap-3">
-                    {pairedItems.map((item) => (
-                      <div key={item.id} className="flex items-center gap-3">
-                        <div className="w-12 h-12 relative rounded-full overflow-hidden">
-                          <Image
-                            src={item.image!}
-                            alt={item.name}
-                            fill
-                            className="object-cover"
-                          />
+                )}
+                {pairedItems.length > 0 && (
+                  <div>
+                    <h4 className="font-semibold mb-2">Best Paired With</h4>
+                    <div className="grid gap-3">
+                      {pairedItems.map((item) => (
+                        <div key={item.id} className="flex items-center gap-3">
+                          <div className="w-12 h-12 relative rounded-full overflow-hidden">
+                            <Image
+                              src={item.image!}
+                              alt={item.name}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                          <div>
+                            <p className="font-medium">{item.name}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {formatPrice(item.price)}
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-medium">{item.name}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {formatPrice(item.price)}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </div>
         </Modal.Body>
