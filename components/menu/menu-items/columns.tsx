@@ -11,6 +11,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { formatDuration } from "@/lib/utils";
+import { useState } from "react";
+import EditMenuItem from "./edit-item";
+import { PopoverClose } from "@radix-ui/react-popover";
 
 const StatusBadge = ({ status }: { status: MenuItem["status"] }) => (
   <Badge
@@ -35,39 +38,52 @@ const MenuItemImage = ({ src, alt }: { src: string; alt: string }) => (
 );
 
 const MenuItemActions: React.FC<MenuItem> = (item) => {
+  const [showEditModal, setShowEditModal] = useState(false);
   return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon">
-          <MoreVertical className="h-4 w-4" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-28 !p-4">
-        <div className="flex flex-col items-start">
-          <Button
-            variant="link"
-            size="sm"
-            className="hover:text-secondary hover:no-underline"
-          >
-            View
+    <>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button variant="ghost" size="icon">
+            <MoreVertical className="h-4 w-4" />
           </Button>
-          <Button
-            variant="link"
-            size="sm"
-            className="hover:text-secondary hover:no-underline"
-          >
-            Update
-          </Button>
-          <Button
-            variant="link"
-            size="sm"
-            className="hover:text-secondary hover:no-underline"
-          >
-            {item.status === "available" ? "Unlist" : "List"}
-          </Button>
-        </div>
-      </PopoverContent>
-    </Popover>
+        </PopoverTrigger>
+        <PopoverContent className="w-28 !p-4">
+          <div className="flex flex-col items-start">
+            <PopoverClose asChild>
+              <Button
+                variant="link"
+                size="sm"
+                className="hover:text-secondary hover:no-underline"
+              >
+                View
+              </Button>
+            </PopoverClose>
+            <PopoverClose asChild>
+              <Button
+                variant="link"
+                size="sm"
+                className="hover:text-secondary hover:no-underline"
+                onClick={() => setShowEditModal(true)}
+              >
+                Update
+              </Button>
+            </PopoverClose>
+            <Button
+              variant="link"
+              size="sm"
+              className="hover:text-secondary hover:no-underline"
+            >
+              {item.status === "available" ? "Unlist" : "List"}
+            </Button>
+          </div>
+        </PopoverContent>
+      </Popover>
+      <EditMenuItem
+        menuItem={item}
+        isOpen={showEditModal}
+        onClose={() => setShowEditModal(false)}
+      />
+    </>
   );
 };
 

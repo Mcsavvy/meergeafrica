@@ -10,7 +10,7 @@ type CreateMenuItemData = Omit<
   MenuItem,
   "id" | "addOns" | "pairedItems" | "image"
 > & {
-  image?: File;
+  image?: File | string;
   addOns: AddOn["id"][];
   pairedItems: PairedItem["id"][];
 };
@@ -18,7 +18,7 @@ type CreateMenuItemData = Omit<
 type UpdateMenuItemData = Partial<
   Omit<MenuItem, "id" | "addOns" | "pairedItems" | "image">
 > & {
-  image?: File;
+  image?: File | string;
   addOns?: AddOn["id"][];
   pairedItems?: PairedItem["id"][];
 };
@@ -52,7 +52,10 @@ export const createMenuItemsStore = (
         ...data,
         addOns: data.addOns.map((id) => id),
         pairedItems: data.pairedItems.map((id) => id),
-        image: await convertToBase64(data.image as File),
+        image:
+          typeof data.image == "string"
+            ? data.image
+            : await convertToBase64(data.image as File),
         id: Math.random().toString(36).slice(2, 9),
       };
       set((state) => {
@@ -66,7 +69,9 @@ export const createMenuItemsStore = (
       // Update menu item
       await new Promise((resolve) => setTimeout(resolve, 1000));
       const image = update.image
-        ? await convertToBase64(update.image)
+        ? typeof update.image == "string"
+          ? update.image
+          : await convertToBase64(update.image as File)
         : menuItem.image;
       set((state) => {
         const index = state.menuItems.findIndex((m) => m.id === menuItem.id);
