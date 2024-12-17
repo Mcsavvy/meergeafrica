@@ -32,4 +32,4 @@ jobs:
         server: ftp.meergeafrica.com
         username: osher@food.meergeafrica.com
         password: ${{ secrets.pass }}
-        local-dir: build/
+        # local-dir: build/
