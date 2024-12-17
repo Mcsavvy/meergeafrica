@@ -1,3 +1,4 @@
+import { useState, useCallback, useEffect } from "react";
 import Modal from "@/components/ui/modal";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -21,125 +22,90 @@ import {
 } from "@/components/ui/form";
 import DurationInput from "@/components/ui/duration";
 import { useMenuItemsStore } from "@/lib/contexts/menu-items-context";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { MenuItem } from "@/types/menu";
 
 const sizeUnits = [
-  {
-    value: "kg",
-    label: "kg",
-  },
-  {
-    value: "g",
-    label: "g",
-  },
+  { value: "kg", label: "kg" },
+  { value: "g", label: "g" },
 ];
 
 const menuCategories = [
-  {
-    value: "Soups & Swallows",
-    label: "Soups & Swallows",
-  },
-  {
-    value: "Stews & Sauces",
-    label: "Stews & Sauces",
-  },
-  {
-    value: "Rice Dishes",
-    label: "Rice Dishes",
-  },
-  {
-    value: "Pastries & Small chops",
-    label: "Pastries & Small chops",
-  },
-  {
-    value: "Grills & Barbecue",
-    label: "Grills & Barbecue",
-  },
-  {
-    value: "Local Appetizers",
-    label: "Local Appetizers",
-  },
-  {
-    value: "Seafood Dishes",
-    label: "Seafood Dishes",
-  },
-  {
-    value: "Pepper soups",
-    label: "Pepper soups",
-  },
-  {
-    value: "Breakfast",
-    label: "Breakfast",
-  },
-  {
-    value: "Pasta",
-    label: "Pasta",
-  },
-  {
-    value: "Desserts",
-    label: "Desserts",
-  },
-  {
-    value: "Continental Dishes",
-    label: "Continental Dishes",
-  },
-  {
-    value: "Foreign Dish",
-    label: "Foreign Dish",
-  },
-  {
-    value: "Chef Specials",
-    label: "Chef Specials",
-  },
+  { value: "Soups & Swallows", label: "Soups & Swallows" },
+  { value: "Stews & Sauces", label: "Stews & Sauces" },
+  { value: "Rice Dishes", label: "Rice Dishes" },
+  { value: "Pastries & Small chops", label: "Pastries & Small chops" },
+  { value: "Grills & Barbecue", label: "Grills & Barbecue" },
+  { value: "Local Appetizers", label: "Local Appetizers" },
+  { value: "Seafood Dishes", label: "Seafood Dishes" },
+  { value: "Pepper soups", label: "Pepper soups" },
+  { value: "Breakfast", label: "Breakfast" },
+  { value: "Pasta", label: "Pasta" },
+  { value: "Desserts", label: "Desserts" },
+  { value: "Continental Dishes", label: "Continental Dishes" },
+  { value: "Foreign Dish", label: "Foreign Dish" },
+  { value: "Chef Specials", label: "Chef Specials" },
 ];
 
 const itemStatus = [
-  {
-    value: "available",
-    label: "Available",
-  },
-  {
-    value: "unlisted",
-    label: "Unlisted",
-  },
+  { value: "available", label: "Available" },
+  { value: "unlisted", label: "Unlisted" },
 ];
 
-const CreateMenuItem = () => {
+interface EditMenuItemProps {
+  menuItem: MenuItem;
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const EditMenuItem = ({ menuItem, isOpen, onClose }: EditMenuItemProps) => {
   const form = useZodForm({
     schema: MenuItemFormSchema,
+    defaultValues: {
+      // @ts-expect-error ...
+      name: menuItem.name,
+      image: menuItem.image,
+      price: menuItem.price,
+      portions: menuItem.portions,
+      size: menuItem.size,
+      ingredients: menuItem.ingredients,
+      status: menuItem.status,
+      category: menuItem.category,
+      readyTime: menuItem.readyTime,
+      addOns: menuItem.addOns,
+      pairedItems: menuItem.pairedItems,
+    },
   });
-  const { createMenuItem } = useMenuItemsStore();
-  const [open, setOpen] = useState(false);
 
-  const handleSubmit = useMemo(
-    () =>
-      form.handleSubmit((values) => {
-        console.log(values);
-        createMenuItem(values);
-        setOpen(false);
-      }),
-    [createMenuItem, form]
+  const { updateMenuItem } = useMenuItemsStore();
+
+  const handleSubmit = form.handleSubmit(
+    useCallback(
+      async (values) => {
+        await updateMenuItem(menuItem, values);
+        onClose();
+      },
+      [updateMenuItem, menuItem, onClose]
+    )
   );
 
   return (
     <Form {...form}>
       <form onSubmit={handleSubmit}>
         <Modal
+          id={`edit-menu-item-${menuItem.id}`}
           className="max-w-3xl"
-          id="create-menu-item-modal"
-          isOpen={open}
-          onOpen={() => setOpen(true)}
-          onClose={() => setOpen(false)}
+          isOpen={isOpen}
+          onClose={onClose}
         >
-          <Modal.Header className="md:px-8">Create Menu Item</Modal.Header>
+          <Modal.Header className="md:px-8">Edit Menu Item</Modal.Header>
           <Modal.Body className="overflow-y-auto md:p-8">
-            <CreateMenuItemForm form={form} />
+            <EditMenuItemForm form={form} menuItem={menuItem} />
           </Modal.Body>
           <Modal.Footer>
-            <Button type="button" variant="outline">
-              Customize
+            <Button type="button" variant="outline" onClick={onClose}>
+              Cancel
             </Button>
-            <Button type="submit">Add to Menu</Button>
+            <Button type="submit">Save Changes</Button>
           </Modal.Footer>
         </Modal>
       </form>
@@ -147,18 +113,38 @@ const CreateMenuItem = () => {
   );
 };
 
-const CreateMenuItemForm = ({
+const EditMenuItemForm = ({
   form,
+  menuItem,
 }: {
   form: ReturnType<typeof useZodForm>;
+  menuItem: MenuItem;
 }) => {
   const [category, setCategory] = useState<{
     label: string;
     value: string;
-  } | null>(null);
+  } | null>(() => {
+    const cat = menuCategories.find((c) => c.value === menuItem.category);
+    return cat
+      ? {
+          label: cat.value,
+          value: cat.value,
+        }
+      : null;
+  });
+
   const [status, setStatus] = useState<{ label: string; value: string } | null>(
-    null
+    () => {
+      const stat = itemStatus.find((s) => s.value === menuItem.status);
+      return stat
+        ? {
+            label: stat.value,
+            value: stat.value,
+          }
+        : null;
+    }
   );
+
   const setSize = useCallback(
     (v: { amount: number; unit: string }) => {
       form.setValue("size", v);
@@ -169,7 +155,8 @@ const CreateMenuItemForm = ({
   const setImage = useCallback(
     (v?: File) => {
       if (v) {
-        form.setValue("image", v);
+        form.setValue("image", "");
+        return;
       }
     },
     [form]
@@ -188,55 +175,44 @@ const CreateMenuItemForm = ({
   }, [status, form]);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 group">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div className="space-y-6">
-        {/* Menu Item Name */}
         <FormField
           control={form.control}
           name="name"
           render={({ field }) => (
             <FormItem className="space-y-2">
-              <FormLabel className="required" htmlFor="name">
-                Menu Item Name
-              </FormLabel>
+              <FormLabel className="required">Menu Item Name</FormLabel>
               <FormControl>
-                <Input id="name" placeholder="Enter Item Name" {...field} />
+                <Input placeholder="Enter Item Name" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        {/* Price */}
+
         <FormField
           control={form.control}
           name="price"
           render={({ field }) => (
             <FormItem className="space-y-2">
-              <FormLabel className="required" htmlFor="price">
-                Price
-              </FormLabel>
+              <FormLabel className="required">Price</FormLabel>
               <FormControl>
-                <NairaInput
-                  id="price"
-                  placeholder="0.00"
-                  type="number"
-                  {...field}
-                />
+                <NairaInput placeholder="0.00" type="number" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        {/* Portion */}
+
         <FormField
           control={form.control}
           name="portions"
           render={({ field }) => (
             <FormItem className="space-y-2">
-              <FormLabel htmlFor="portions">Portion (optional)</FormLabel>
+              <FormLabel>Portion (optional)</FormLabel>
               <FormControl>
                 <Input
-                  id="portions"
                   placeholder="Number of portions"
                   type="number"
                   {...field}
@@ -246,19 +222,16 @@ const CreateMenuItemForm = ({
             </FormItem>
           )}
         />
-        {/* Size */}
+
         <FormField
           control={form.control}
           name="size"
           render={({ field }) => (
             <FormItem className="space-y-2">
-              <FormLabel className="required" htmlFor="size">
-                Size
-              </FormLabel>
+              <FormLabel className="required">Size</FormLabel>
               <FormControl>
                 <UnitInput
                   units={sizeUnits}
-                  id="size"
                   placeholder="0.00kg/g"
                   {...field}
                   onChange={setSize}
@@ -268,38 +241,29 @@ const CreateMenuItemForm = ({
             </FormItem>
           )}
         />
-        {/* Ingredients Details */}
+
         <FormField
           control={form.control}
           name="ingredients"
           render={({ field }) => (
             <FormItem className="space-y-2">
-              <FormLabel className="required" htmlFor="ingredients">
-                Ingredients Details
-              </FormLabel>
+              <FormLabel className="required">Ingredients Details</FormLabel>
               <FormControl>
-                <Textarea
-                  id="ingredients"
-                  placeholder="Add description"
-                  {...field}
-                />
+                <Textarea placeholder="Add description" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        {/* Item Status */}
+
         <FormField
           control={form.control}
           name="status"
           render={({ field }) => (
             <FormItem className="space-y-2">
-              <FormLabel className="required" htmlFor="status">
-                Item Status
-              </FormLabel>
+              <FormLabel className="required">Item Status</FormLabel>
               <FormControl>
                 <Select
-                  id="status"
                   options={itemStatus}
                   placeholder="Select status"
                   {...field}
@@ -312,18 +276,14 @@ const CreateMenuItemForm = ({
           )}
         />
 
-        {/* Menu Category */}
         <FormField
           control={form.control}
           name="category"
           render={({ field }) => (
             <FormItem className="space-y-2">
-              <FormLabel className="required" htmlFor="category">
-                Menu Category
-              </FormLabel>
+              <FormLabel className="required">Menu Category</FormLabel>
               <FormControl>
                 <CreateableSelect
-                  id="category"
                   options={menuCategories}
                   placeholder="Select category"
                   formatCreateLabel={(input) => `Create category "${input}"`}
@@ -336,7 +296,7 @@ const CreateMenuItemForm = ({
             </FormItem>
           )}
         />
-        {/* Ready Time */}
+
         <FormField
           control={form.control}
           name="readyTime"
@@ -351,6 +311,7 @@ const CreateMenuItemForm = ({
           )}
         />
       </div>
+
       <div className="space-y-4">
         <FormField
           control={form.control}
@@ -365,6 +326,7 @@ const CreateMenuItemForm = ({
             </FormItem>
           )}
         />
+
         <FormField
           control={form.control}
           name="pairedItems"
@@ -378,17 +340,16 @@ const CreateMenuItemForm = ({
             </FormItem>
           )}
         />
-        {/* Image Upload */}
+
         <FormField
           control={form.control}
           name="image"
           render={() => (
             <FormItem className="space-y-2">
-              <FormLabel className="required">Menu Item Image</FormLabel>
+              <FormLabel>Menu Item Image</FormLabel>
               <FormControl>
                 <ImageDropzone
                   name="image"
-                  required
                   value={form.watch("image")}
                   onChange={setImage}
                 />
@@ -402,4 +363,4 @@ const CreateMenuItemForm = ({
   );
 };
 
-export default CreateMenuItem;
+export default EditMenuItem;

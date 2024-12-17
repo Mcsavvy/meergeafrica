@@ -20,6 +20,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { convertToBase64 } from "@/lib/utils";
 
 export const CreatePairedItemModal = () => {
   const { createPairedItem } = usePairingStore();
@@ -51,6 +52,7 @@ export const CreatePairedItemModal = () => {
     <Modal
       id="create-paired-item-modal"
       isOpen={open}
+      layer="secondary"
       onClose={() => setOpen(false)}
       className="max-w-md"
     >
@@ -90,16 +92,13 @@ export const CreatePairedItemForm = ({
         price: data.price,
       });
     }
-
-    const reader = new FileReader();
-    reader.onload = () => {
+    convertToBase64(data.image).then((image) => {
       onCreatePairedItem({
         name: data.name,
         price: data.price,
-        image: reader.result as string,
+        image,
       });
-    };
-    reader.readAsDataURL(data.image);
+    });
   });
 
   return (
@@ -193,6 +192,7 @@ export const EditPairedItemModal = () => {
     <Modal
       id="edit-paired-item-modal"
       isOpen={open}
+      layer="secondary"
       onClose={() => setOpen(false)}
       className="max-w-md"
     >
@@ -232,16 +232,13 @@ export const EditPairedItemForm = ({
         price: data.price,
       });
     }
-
-    const reader = new FileReader();
-    reader.onload = () => {
+    convertToBase64(data.image).then((image) => {
       onUpdatePairedItem({
         name: data.name,
         price: data.price,
-        image: reader.result as string,
+        image,
       });
-    };
-    reader.readAsDataURL(data.image);
+    });
   });
 
   return (

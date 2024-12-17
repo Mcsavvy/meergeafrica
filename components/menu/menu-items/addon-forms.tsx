@@ -20,6 +20,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { convertToBase64 } from "@/lib/utils";
 
 export const CreateAddOnModal = () => {
   const { createAddOn } = useAddOnStore();
@@ -51,6 +52,7 @@ export const CreateAddOnModal = () => {
     <Modal
       id="create-add-on-modal"
       isOpen={open}
+      layer="secondary"
       onClose={() => setOpen(false)}
       className="max-w-md"
     >
@@ -78,16 +80,13 @@ export const CreateAddOnForm = ({
     if (!data.image) {
       return onCreateAddOn({ name: data.name, price: data.price });
     }
-    // convert to base64
-    const reader = new FileReader();
-    reader.onload = () => {
+    convertToBase64(data.image).then((image) => {
       onCreateAddOn({
         name: data.name,
         price: data.price,
-        image: reader.result as string,
+        image: image,
       });
-    };
-    reader.readAsDataURL(data.image);
+    });
   });
 
   return (
@@ -183,6 +182,7 @@ export const EditAddOnModal = () => {
     <Modal
       id="edit-add-on-modal"
       isOpen={open}
+      layer="secondary"
       onClose={() => setOpen(false)}
       className="max-w-md"
     >
@@ -213,19 +213,16 @@ export const EditAddOnForm = ({
 
   const handleSubmit = form.handleSubmit((data) => {
     if (!addOn) return;
-    if (!addOn.image) {
+    if (!data.image) {
       return onUpdateAddOn({ name: data.name, price: data.price });
     }
-    // convert to base64
-    const reader = new FileReader();
-    reader.onload = () => {
+    return convertToBase64(data.image).then((image) => {
       onUpdateAddOn({
         name: data.name,
         price: data.price,
-        image: reader.result as string,
+        image: image,
       });
-    };
-    reader.readAsDataURL(data.image!);
+    });
   });
 
   return (
