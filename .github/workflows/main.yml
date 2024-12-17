@@ -2,7 +2,7 @@ on:
   workflow_dispatch:
   push:    
     branches:
-      - uat
+      - main
 name: 🚀 Deploy Cook
 jobs:
   web-deploy:
