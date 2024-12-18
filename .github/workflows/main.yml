@@ -4,32 +4,47 @@ on:
     branches:
       - main
 name: 🚀 Deploy Cook
+
 jobs:
-  web-deploy:
-    name: 🎉 Deploy
+  netlify-deploy:
+    name: "Deploy"
     runs-on: ubuntu-latest
+
     steps:
-    - name: 🚚 Get latest code
-      uses: actions/checkout@v4
+      - uses: actions/checkout@v1
+      - uses: veloii/action-netlify-deploy@v2.2.1
+        with:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          NETLIFY_DEPLOY_MESSAGE: "Prod deploy v${{ github.ref }}"
+          NETLIFY_DEPLOY_TO_PROD: true
+b
+
+  # cpanel-deploy:
+  #   name: 🎉 Deploy
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - name: 🚚 Get latest code
+  #     uses: actions/checkout@v4
       
-    - name: Use Node.js 18
-      uses: actions/setup-node@v2
-      with:
-        node-version: '18'
+  #   - name: Use Node.js 18
+  #     uses: actions/setup-node@v2
+  #     with:
+  #       node-version: '18'
       
-    - name: 🔨 Build Project
-      run: |
-        npm install
-        npm run build
+  #   - name: 🔨 Build Project
+  #     run: |
+  #       npm install
+  #       npm run build
     
-    - name: List output files
-      run: pwd && ls -al
-      # run: find build/ -print
+  #   - name: List output files
+  #     run: pwd && ls -al
+  #     # run: find build/ -print
     
-    - name: 📂 Sync files
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-      with:        
-        server: ftp.meergeafrica.com
-        username: osher@food.meergeafrica.com
-        password: ${{ secrets.pass }}
-        # local-dir: build/
+  #   - name: 📂 Sync files
+  #     uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+  #     with:        
+  #       server: ftp.meergeafrica.com
+  #       username: osher@food.meergeafrica.com
+  #       password: ${{ secrets.pass }}
+  #       # local-dir: build/
