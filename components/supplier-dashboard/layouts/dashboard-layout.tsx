@@ -1,7 +1,9 @@
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
+"use client";
+
+import React, { useState } from "react";
 import {
+  ChevronDown,
+  ChevronUp,
   LayoutDashboard,
   ShoppingCart,
   Package,
@@ -10,32 +12,62 @@ import {
   Settings,
   LogOut,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const sidebarItems = [
   {
     title: "Dashboard",
     icon: LayoutDashboard,
-    href: "/dashboard",
+    href: "supplier/dashboard",
   },
   {
     title: "Orders",
     icon: ShoppingCart,
-    href: "/dashboard/orders",
+    href: "#",
+    subItems: [
+      { title: "Recent Orders", href: "/dashboard/orders/recent" },
+      { title: "Confirmed Orders", href: "/dashboard/orders/confirmed" },
+      { title: "Order History", href: "/dashboard/orders/history" },
+    ],
   },
   {
     title: "Inventory",
     icon: Package,
-    href: "/dashboard/inventory",
+    href: "#",
+    subItems: [
+      { title: "Stores", href: "/dashboard/inventory/stores" },
+      { title: "New Stock Items", href: "/dashboard/inventory/new" },
+      { title: "Sold Stock Items", href: "/dashboard/inventory/sold" },
+      { title: "All Stock Items", href: "/dashboard/inventory/all" },
+    ],
   },
   {
     title: "Payments",
     icon: CreditCard,
-    href: "/dashboard/payments",
+    href: "#",
+    subItems: [
+      { title: "Sales Processed", href: "/dashboard/payments/sales" },
+      { title: "All Payments", href: "/dashboard/payments/all" },
+    ],
   },
   {
-    title: "Quick market",
+    title: "Quick Market",
     icon: Store,
-    href: "/dashboard/quick-market",
+    href: "#",
+    subItems: [
+      {
+        title: "Price prediction",
+        href: "/dashboard/quick-market/Price-prediction",
+      },
+      { title: "Farm products", href: "/dashboard/quick-market/Farm-products" },
+      {
+        title: "Non-farm products",
+        href: "/dashboard/quick-market/non-farm-products",
+      },
+      { title: "Items in cart", href: "/dashboard/quick-market/items-in-cart" },
+    ],
   },
   {
     title: "Settings",
@@ -45,6 +77,16 @@ const sidebarItems = [
 ];
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const [openItems, setOpenItems] = useState<string[]>([]);
+
+  const toggleItem = (title: string) => {
+    setOpenItems((prev) =>
+      prev.includes(title)
+        ? prev.filter((item) => item !== title)
+        : [...prev, title]
+    );
+  };
+
   return (
     <div className="flex min-h-screen">
       {/* Sidebar */}
@@ -56,16 +98,39 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
 
         <nav className="space-y-2">
           {sidebarItems.map((item) => (
-            <Link
-              key={item.title}
-              href={item.href}
-              className={cn(
-                "flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors"
+            <div key={item.title}>
+              <Link
+                href={item.href}
+                className={cn(
+                  "flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors",
+                  { "cursor-pointer": item.subItems }
+                )}
+                onClick={() => item.subItems && toggleItem(item.title)}
+              >
+                <item.icon className="w-5 h-5" />
+                <span>{item.title}</span>
+                {item.subItems && (
+                  <ChevronDown
+                    className={cn("ml-auto transition-transform", {
+                      "rotate-180": openItems.includes(item.title),
+                    })}
+                  />
+                )}
+              </Link>
+              {item.subItems && openItems.includes(item.title) && (
+                <div className="ml-6 mt-2 space-y-1">
+                  {item.subItems.map((subItem) => (
+                    <Link
+                      key={subItem.title}
+                      href={subItem.href}
+                      className="block px-3 py-2 rounded-lg hover:bg-white/10 transition-colors"
+                    >
+                      {subItem.title}
+                    </Link>
+                  ))}
+                </div>
               )}
-            >
-              <item.icon className="w-5 h-5" />
-              <span>{item.title}</span>
-            </Link>
+            </div>
           ))}
         </nav>
 
