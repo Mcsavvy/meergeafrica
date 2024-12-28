@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import {
   ChevronDown,
-  ChevronUp,
   LayoutDashboard,
   ShoppingCart,
   Package,
@@ -20,16 +19,19 @@ const sidebarItems = [
   {
     title: "Dashboard",
     icon: LayoutDashboard,
-    href: "supplier/dashboard",
+    href: "/supplier/dashboard",
   },
   {
     title: "Orders",
     icon: ShoppingCart,
     href: "#",
     subItems: [
-      { title: "Recent Orders", href: "/dashboard/orders/recent" },
-      { title: "Confirmed Orders", href: "/dashboard/orders/confirmed" },
-      { title: "Order History", href: "/dashboard/orders/history" },
+      { title: "Recent Orders", href: "/supplier/dashboard/orders/recent" },
+      {
+        title: "Confirmed Orders",
+        href: "/supplier/dashboard/orders/confirmed",
+      },
+      { title: "Order History", href: "/supplier/dashboard/orders/history" },
     ],
   },
   {
@@ -37,10 +39,9 @@ const sidebarItems = [
     icon: Package,
     href: "#",
     subItems: [
-      { title: "Stores", href: "/dashboard/inventory/stores" },
-      { title: "New Stock Items", href: "/dashboard/inventory/new" },
-      { title: "Sold Stock Items", href: "/dashboard/inventory/sold" },
-      { title: "All Stock Items", href: "/dashboard/inventory/all" },
+      { title: "Stores", href: "/supplier/dashboard/inventory/stores" },
+      { title: "New Stock Items", href: "/supplier/dashboard/inventory/new" },
+      { title: "All Stock Items", href: "/supplier/dashboard/inventory/all" },
     ],
   },
   {
@@ -48,8 +49,8 @@ const sidebarItems = [
     icon: CreditCard,
     href: "#",
     subItems: [
-      { title: "Sales Processed", href: "/dashboard/payments/sales" },
-      { title: "All Payments", href: "/dashboard/payments/all" },
+      { title: "Sales Processed", href: "/supplier/dashboard/payments/sales" },
+      { title: "All Payments", href: "/supplier/dashboard/payments/all" },
     ],
   },
   {
@@ -57,22 +58,17 @@ const sidebarItems = [
     icon: Store,
     href: "#",
     subItems: [
+      { title: "Products", href: "/supplier/dashboard/quick-market/products" },
       {
-        title: "Price prediction",
-        href: "/dashboard/quick-market/Price-prediction",
+        title: "Categories",
+        href: "/supplier/dashboard/quick-market/categories",
       },
-      { title: "Farm products", href: "/dashboard/quick-market/Farm-products" },
-      {
-        title: "Non-farm products",
-        href: "/dashboard/quick-market/non-farm-products",
-      },
-      { title: "Items in cart", href: "/dashboard/quick-market/items-in-cart" },
     ],
   },
   {
     title: "Settings",
     icon: Settings,
-    href: "/dashboard/settings",
+    href: "/supplier/dashboard/settings",
   },
 ];
 
@@ -100,12 +96,17 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           {sidebarItems.map((item) => (
             <div key={item.title}>
               <Link
-                href={item.href}
+                href={item.href || "#"}
                 className={cn(
                   "flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors",
                   { "cursor-pointer": item.subItems }
                 )}
-                onClick={() => item.subItems && toggleItem(item.title)}
+                onClick={(e) => {
+                  if (item.subItems) {
+                    e.preventDefault();
+                    toggleItem(item.title);
+                  }
+                }}
               >
                 <item.icon className="w-5 h-5" />
                 <span>{item.title}</span>
