@@ -1,6 +1,7 @@
 "use client";
 
 import { useForm } from "react-hook-form";
+
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -38,8 +39,10 @@ type StepOneProps = {
 export const firstStepSchema = z.object({
   firstName: z.string().min(2).max(255),
   lastName: z.string().min(2).max(255),
-  email: z.string().email(),
-  phoneNumber: z.string().min(10).max(15),
+  email: z
+    .string()
+    .regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Invalid email address"),
+  phoneNumber: z.string().regex(/^[0-9]{10}$/),
   password: z.string().min(8).max(255),
 });
 
@@ -104,9 +107,14 @@ const StepOne = ({ onNext }: StepOneProps) => {
                   <PhoneInput
                     placeholder="Enter Your Phone Number"
                     {...field}
+                    name="phoneNumber"
+                    required
+                    autoFocus
                   />
                 </FormControl>
-                <FormMessage />
+                <FormMessage>
+                  {form.formState.errors.phoneNumber?.message}
+                </FormMessage>
               </FormItem>
             )}
           />
@@ -122,7 +130,9 @@ const StepOne = ({ onNext }: StepOneProps) => {
                 <FormControl>
                   <Input type="email" placeholder="Email" {...field} />
                 </FormControl>
-                <FormMessage />
+                <FormMessage>
+                  {form.formState.errors.email?.message}
+                </FormMessage>
               </FormItem>
             )}
           />

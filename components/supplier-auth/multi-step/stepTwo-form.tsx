@@ -29,8 +29,10 @@ import Image from "next/image";
 
 export const Step2Schema = z.object({
   businessName: z.string().min(2).max(255),
-  businessNumber: z.string().min(10).max(15),
-  businessemail: z.string().email(),
+  businessNumber: z.string().regex(/^[0-9]{10}$/),
+  businessemail: z
+    .string()
+    .regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Invalid email address"),
   businessAddress: z.string().min(2).max(255),
   supplierCategory: z.string().min(2).max(255),
   // businessaccountNumber: z.string().min(2).max(255),

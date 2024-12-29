@@ -26,7 +26,9 @@ export const metadata: Metadata = {
 };
 
 export const thirdStepSchema = z.object({
-  businessaccountNumber: z.string().min(2).max(255),
+  businessaccountNumber: z
+    .string()
+    .regex(/^[0-9]{10}$/, "Business number must be 10 digits"),
   businessAccountName: z.string().min(2).max(255),
   cacRegistrationNumber: z.string().min(2).max(255),
   cacRegistrationDocument: z.string().optional(),
@@ -75,7 +77,9 @@ const StepThree = ({ onBack, handleSubmit, formData }: StepThreeProps) => {
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage>
+                    {form.formState.errors.businessaccountNumber?.message}
+                  </FormMessage>
                 </FormItem>
               )}
             />
