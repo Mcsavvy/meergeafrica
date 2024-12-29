@@ -204,9 +204,9 @@ export const EditAddOnForm = ({
   const form = useZodForm({
     schema: AddOnFormSchema,
     defaultValues: {
-      // @ts-expect-error ...
       name: addOn?.name,
       price: addOn?.price,
+      // @ts-expect-error ...
       image: addOn?.image,
     },
   });
