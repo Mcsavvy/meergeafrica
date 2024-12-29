@@ -126,54 +126,110 @@ export default function Stores() {
       </div>
 
       {/* Create Store Modal */}
+
       <Dialog open={isCreateStoreOpen} onOpenChange={setIsCreateStoreOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="max-w-[90vw] md:max-w-[70vw] lg:max-w-[50vw] max-h-[90vh] overflow-y-auto p-8 bg-white rounded-lg shadow-lg">
           <DialogHeader>
-            <DialogTitle>Create Store</DialogTitle>
+            <DialogTitle className="text-2xl font-semibold">
+              Create Store
+            </DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
-            <div className="flex items-center">
-              <Label className="w-1/3">Store Name</Label>
-              <Input
-                className="w-2/3"
-                value={newStoreName}
-                onChange={(e) => setNewStoreName(e.target.value)}
-              />
+
+          <div className="mt-6 space-y-6">
+            {" "}
+            {/* Space between form groups */}
+            <div>
+              <div className="flex items-start">
+                {" "}
+                {/* Flexbox for label and input alignment */}
+                <Label
+                  htmlFor="storeName"
+                  className="w-1/3 text-sm font-medium text-gray-700 pt-1 mr-4"
+                >
+                  {" "}
+                  {/* Fixed width for label */}
+                  Store Name
+                  <br />
+                  <span className="text-xs text-gray-500">
+                    appears on invoice, invoice
+                  </span>
+                </Label>
+                <Input
+                  id="storeName"
+                  className="w-2/3 border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 flex-grow" // Take remaining space
+                  value={newStoreName}
+                  onChange={(e) => setNewStoreName(e.target.value)}
+                />
+              </div>
             </div>
-            <div className="flex items-center">
-              <Label className="w-1/3">Store Image</Label>
-              <Input
-                className="w-2/3"
-                value={newStoreImage}
-                onChange={(e) => setNewStoreImage(e.target.value)}
-              />
+            <div>
+              <div className="flex items-start">
+                <Label
+                  htmlFor="storeImage"
+                  className="w-1/3 text-sm font-medium text-gray-700 pt-1 mr-4"
+                >
+                  Store Image
+                  <br />
+                  <span className="text-xs text-gray-500">
+                    choose or personalise your store avatar
+                  </span>
+                </Label>
+                <Select value={newStoreImage} onValueChange={setNewStoreImage}>
+                  <SelectTrigger className="w-2/3 flex-grow border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center justify-between">
+                    <SelectValue placeholder="Select Image" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Kaddstore001 PNG">
+                      Kaddstore001 PNG
+                    </SelectItem>
+                    <SelectItem value="image2">Image 2</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-            <div className="flex items-center">
-              <Label className="w-1/3">Business Section</Label>
-              <Select
-                className="w-2/3"
-                value={newBusinessSection}
-                onValueChange={setNewBusinessSection}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select section" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="section1">Section 1</SelectItem>
-                  <SelectItem value="section2">Section 2</SelectItem>
-                </SelectContent>
-              </Select>
+            <div>
+              <div className="flex items-start">
+                <Label
+                  htmlFor="businessSection"
+                  className="w-1/3 text-sm font-medium text-gray-700 pt-1 mr-4"
+                >
+                  Business Section Name
+                  <br />
+                  <span className="text-xs text-gray-500">
+                    write a business section name
+                  </span>
+                </Label>
+                <Input
+                  id="businessSection"
+                  className="w-2/3 border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 flex-grow"
+                  value={newBusinessSection}
+                  onChange={(e) => setNewBusinessSection(e.target.value)}
+                />
+              </div>
             </div>
-            <div className="flex items-center">
-              <Label className="w-1/3">Description</Label>
-              <Input
-                className="w-2/3"
-                value={newStoreDescription}
-                onChange={(e) => setNewStoreDescription(e.target.value)}
-              />
+            <div>
+              <div className="flex items-start">
+                <Label
+                  htmlFor="storeDescription"
+                  className="w-1/3 text-sm font-medium text-gray-700 pt-1 mr-4"
+                >
+                  Store Description
+                  <br />
+                  <span className="text-xs text-gray-500">
+                    enter stock type
+                  </span>
+                </Label>
+                <textarea
+                  id="storeDescription"
+                  className="w-2/3 border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y min-h-[80px] flex-grow"
+                  value={newStoreDescription}
+                  onChange={(e) => setNewStoreDescription(e.target.value)}
+                />
+              </div>
             </div>
           </div>
-          <DialogFooter>
+
+          <DialogFooter className="mt-8 flex justify-end gap-4">
             <Button variant="outline" onClick={handleCloseModal}>
               Back
             </Button>
@@ -184,239 +240,3 @@ export default function Stores() {
     </div>
   );
 }
-
-// import React from "react";
-
-// import { Card } from "@/components/ui/card";
-// import { Plus, Building, Settings, ChevronRight } from "lucide-react";
-// import Link from "next/link";
-
-// export default function Stores() {
-//   return (
-//     <div className="p-12">
-//       {" "}
-//       {/* Even more padding around the whole section */}
-//       <h1 className="text-5xl font-bold mb-16">Stores</h1>{" "}
-//       {/* Larger heading and margin */}
-//       <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-//         {" "}
-//         {/* Increased gap significantly */}
-//         {/* Create Store Card */}
-//         <Link href="/dashboard/stores/create">
-//           <Card className="flex items-center p-12 cursor-pointer hover:bg-gray-100 transition h-48">
-//             {" "}
-//             {/* Significantly increased padding and height */}
-//             <div className="rounded-full bg-gray-200 p-6 mr-8">
-//               {" "}
-//               {/* Increased padding and margin */}
-//               <Plus className="w-12 h-12 text-gray-500" />{" "}
-//               {/* Much larger icon */}
-//             </div>
-//             <div className="flex-grow">
-//               <h2 className="text-3xl font-medium mb-2">Create store</h2>{" "}
-//               {/* Larger heading */}
-//               <p className="text-xl text-gray-500">
-//                 Create and view your store...
-//               </p>{" "}
-//               {/* Larger text */}
-//             </div>
-//             <ChevronRight className="w-8 h-8 text-gray-400" />{" "}
-//             {/* Larger arrow */}
-//           </Card>
-//         </Link>
-//         {/* Kadd Stores Card */}
-//         <Link href="/dashboard/stores/kadd">
-//           <Card className="flex items-center p-12 cursor-pointer hover:bg-gray-100 transition h-48">
-//             <div className="rounded-full bg-gray-200 p-6 mr-8">
-//               <span className="text-4xl font-bold">Kadd</span>
-//               {/* Much larger initial text */}
-//             </div>
-//             <div className="flex-grow">
-//               <h2 className="text-3xl font-medium mb-2">Kadd Stores</h2>
-//               <p className="text-xl text-gray-500">
-//                 Your go-to store for premium...
-//               </p>
-//             </div>
-//             <ChevronRight className="w-8 h-8 text-gray-400" />
-//           </Card>
-//         </Link>
-//         {/* Stores Card */}
-//         <Link href="/dashboard/stores/default">
-//           <Card className="flex items-center p-12 cursor-pointer hover:bg-gray-100 transition h-48">
-//             <div className="rounded-full bg-gray-200 p-6 mr-8">
-//               <Building className="w-12 h-12 text-gray-500" />
-//             </div>
-//             <div className="flex-grow">
-//               <h2 className="text-3xl font-medium mb-2">Stores</h2>
-//               <p className="text-xl text-gray-500">
-//                 Default store created for...
-//               </p>
-//             </div>
-//             <ChevronRight className="w-8 h-8 text-gray-400" />
-//           </Card>
-//         </Link>
-//         {/* Store Settings Card */}
-//         <Link href="/dashboard/stores/settings">
-//           <Card className="flex items-center p-12 cursor-pointer hover:bg-gray-100 transition h-48">
-//             <div className="rounded-full bg-gray-200 p-6 mr-8">
-//               <Settings className="w-12 h-12 text-gray-500" />
-//             </div>
-//             <div className="flex-grow">
-//               <h2 className="text-3xl font-medium mb-2">Store settings</h2>
-//               <p className="text-xl text-gray-500">
-//                 Manage and update store...
-//               </p>
-//             </div>
-//             <ChevronRight className="w-8 h-8 text-gray-400" />
-//           </Card>
-//         </Link>
-//       </div>
-//     </div>
-
-//     // <div className="p-8">
-//     //   {" "}
-//     //   {/* Increased padding */}
-//     //   <h1 className="text-4xl font-bold mb-12">Stores</h1>{" "}
-//     //   {/* Larger heading and margin */}
-//     //   <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-//     //     {" "}
-//     //     {/* Increased gap */}
-//     //     {/* Create Store Card */}
-//     //     <Link href="/dashboard/stores/create">
-//     //       <Card className="flex items-center p-8 cursor-pointer hover:bg-gray-100 transition h-32">
-//     //         {" "}
-//     //         {/* Increased padding and height */}
-//     //         <div className="rounded-full bg-gray-200 p-4 mr-6">
-//     //           {" "}
-//     //           {/* Increased padding and margin */}
-//     //           <Plus className="w-8 h-8 text-gray-500" /> {/* Larger icon */}
-//     //         </div>
-//     //         <div className="flex-grow">
-//     //           <h2 className="text-2xl font-medium mb-1">Create store</h2>{" "}
-//     //           {/* Larger heading */}
-//     //           <p className="text-lg text-gray-500">
-//     //             Create and view your store...
-//     //           </p>{" "}
-//     //           {/* Larger text */}
-//     //         </div>
-//     //         <ChevronRight className="w-6 h-6 text-gray-400" />{" "}
-//     //         {/* Larger arrow */}
-//     //       </Card>
-//     //     </Link>
-//     //     {/* Kadd Stores Card */}
-//     //     <Link href="/dashboard/stores/kadd">
-//     //       <Card className="flex items-center p-8 cursor-pointer hover:bg-gray-100 transition h-32">
-//     //         <div className="rounded-full bg-gray-200 p-4 mr-6">
-//     //           <span className="text-3xl font-bold">Kadd</span>
-//     //           {/* Larger initial text */}
-//     //         </div>
-//     //         <div className="flex-grow">
-//     //           <h2 className="text-2xl font-medium mb-1">Kadd Stores</h2>
-//     //           <p className="text-lg text-gray-500">
-//     //             Your go-to store for premium...
-//     //           </p>
-//     //         </div>
-//     //         <ChevronRight className="w-6 h-6 text-gray-400" />
-//     //       </Card>
-//     //     </Link>
-//     //     {/* Stores Card */}
-//     //     <Link href="/dashboard/stores/default">
-//     //       <Card className="flex items-center p-8 cursor-pointer hover:bg-gray-100 transition h-32">
-//     //         <div className="rounded-full bg-gray-200 p-4 mr-6">
-//     //           <Building className="w-8 h-8 text-gray-500" />
-//     //         </div>
-//     //         <div className="flex-grow">
-//     //           <h2 className="text-2xl font-medium mb-1">Stores</h2>
-//     //           <p className="text-lg text-gray-500">
-//     //             Default store created for...
-//     //           </p>
-//     //         </div>
-//     //         <ChevronRight className="w-6 h-6 text-gray-400" />
-//     //       </Card>
-//     //     </Link>
-//     //     {/* Store Settings Card */}
-//     //     <Link href="/dashboard/stores/settings">
-//     //       <Card className="flex items-center p-8 cursor-pointer hover:bg-gray-100 transition h-32">
-//     //         <div className="rounded-full bg-gray-200 p-4 mr-6">
-//     //           <Settings className="w-8 h-8 text-gray-500" />
-//     //         </div>
-//     //         <div className="flex-grow">
-//     //           <h2 className="text-2xl font-medium mb-1">Store settings</h2>
-//     //           <p className="text-lg text-gray-500">
-//     //             Manage and update store...
-//     //           </p>
-//     //         </div>
-//     //         <ChevronRight className="w-6 h-6 text-gray-400" />
-//     //       </Card>
-//     //     </Link>
-//     //   </div>
-//     // </div>
-
-//     // <div>
-//     //   <div className="p-6">
-//     //     {" "}
-//     //     {/* Increased padding */}
-//     //     <h1 className="text-3xl font-bold mb-8">Stores</h1>{" "}
-//     //     {/* Larger heading */}
-//     //     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-//     //       {" "}
-//     //       {/* Adjusted grid and gap */}
-//     //       {/* Create Store Card */}
-//     //       <Link href="/dashboard/stores/create">
-//     //         <Card className="flex flex-col items-center justify-center p-8 cursor-pointer hover:bg-gray-100 transition h-64">
-//     //           {" "}
-//     //           {/* Increased padding and fixed height */}
-//     //           <div className="rounded-full bg-gray-200 p-4 mb-4">
-//     //             {" "}
-//     //             {/* Increased padding */}
-//     //             <Plus className="w-8 h-8 text-gray-500" /> {/* Larger icon */}
-//     //           </div>
-//     //           <h2 className="text-xl font-medium mb-2">Create store</h2>{" "}
-//     //           {/* Larger heading */}
-//     //           <p className="text-base text-gray-500 text-center">
-//     //             Create and view your store...
-//     //           </p>
-//     //         </Card>
-//     //       </Link>
-//     //       {/* Kadd Stores Card */}
-//     //       <Link href="/dashboard/stores/kadd">
-//     //         <Card className="flex flex-col items-center justify-center p-8 cursor-pointer hover:bg-gray-100 transition h-64">
-//     //           <div className="rounded-full bg-gray-200 p-4 mb-4">
-//     //             <span className="text-2xl font-bold">Kadd</span>{" "}
-//     //             {/* Larger text */}
-//     //           </div>
-//     //           <h2 className="text-xl font-medium mb-2">Kadd Stores</h2>
-//     //           <p className="text-base text-gray-500 text-center">
-//     //             Your go-to store for premium...
-//     //           </p>
-//     //         </Card>
-//     //       </Link>
-//     //       {/* Stores Card */}
-//     //       <Link href="/dashboard/stores/default">
-//     //         <Card className="flex flex-col items-center justify-center p-8 cursor-pointer hover:bg-gray-100 transition h-64">
-//     //           <div className="rounded-full bg-gray-200 p-4 mb-4">
-//     //             <Building className="w-8 h-8 text-gray-500" />
-//     //           </div>
-//     //           <h2 className="text-xl font-medium mb-2">Stores</h2>
-//     //           <p className="text-base text-gray-500 text-center">
-//     //             Default store created for...
-//     //           </p>
-//     //         </Card>
-//     //       </Link>
-//     //       {/* Store Settings Card */}
-//     //       <Link href="/dashboard/stores/settings">
-//     //         <Card className="flex flex-col items-center justify-center p-8 cursor-pointer hover:bg-gray-100 transition h-64">
-//     //           <div className="rounded-full bg-gray-200 p-4 mb-4">
-//     //             <Settings className="w-8 h-8 text-gray-500" />
-//     //           </div>
-//     //           <h2 className="text-xl font-medium mb-2">Store settings</h2>
-//     //           <p className="text-base text-gray-500 text-center">
-//     //             Manage and update store...
-//     //           </p>
-//     //         </Card>
-//     //       </Link>
-//     //     </div>
-//     //   </div>
-//     // </div>
-//   );
-// }
