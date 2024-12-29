@@ -22,6 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+// import { createStore } from "@/app/api/suppliers/store-api";
 
 export default function Stores() {
   const [isCreateStoreOpen, setIsCreateStoreOpen] = useState(false);
@@ -51,9 +52,11 @@ export default function Stores() {
       image: newStoreImage,
       section: newBusinessSection,
       description: newStoreDescription,
+      address: "Default Address", // Add the address property
     };
 
-    setStores([...stores, newStore]); // Add new store to the stores array
+    // Add new store to the stores array
+    setStores([...stores, newStore]);
     handleCloseModal();
   };
 
@@ -61,7 +64,7 @@ export default function Stores() {
     <div className="p-8">
       <h1 className="text-4xl font-bold mb-16">Stores</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
         {/* Create Store Card */}
         <div onClick={handleCreateStoreClick}>
           <Card className="flex items-center p-12 cursor-pointer hover:bg-gray-100 transition h-48">
@@ -88,6 +91,22 @@ export default function Stores() {
               <h2 className="text-3xl font-medium mb-2">Store Settings</h2>
               <p className="text-xl text-gray-500">
                 Manage your store settings...
+              </p>
+            </div>
+            <ChevronRight className="w-8 h-8 text-gray-400" />
+          </Card>
+        </Link>
+
+        {/* Stores Card */}
+        <Link href="/supplier/dashboard/inventory/stores">
+          <Card className="flex items-center p-12 cursor-pointer hover:bg-gray-100 transition h-48">
+            <div className="rounded-full bg-gray-200 p-6 mr-8">
+              <Building className="w-12 h-12 text-gray-500" />
+            </div>
+            <div className="flex-grow">
+              <h2 className="text-3xl font-medium mb-2">Stores</h2>
+              <p className="text-xl text-gray-500">
+                Default store created for...
               </p>
             </div>
             <ChevronRight className="w-8 h-8 text-gray-400" />
