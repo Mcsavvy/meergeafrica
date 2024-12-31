@@ -11,6 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -46,12 +47,6 @@ export default function Products() {
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  // const handleAddProduct = () => {
-  //   setProducts([...products, { ...newProduct, id: products.length + 1 }]);
-  //   setNewProduct({ name: "", price: "", category: "" });
-  //   setIsDialogOpen(false);
-  // };
 
   const handleAddProduct = (productData: Product) => {
     setProducts([...products, { ...productData, id: Date.now() }]);
@@ -96,24 +91,56 @@ export default function Products() {
         </div>
       </div>
 
-      {/* <Table>
+      {/* Display products in a table (for specific properties) */}
+      <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Price</TableHead>
+            <TableHead>Product Name</TableHead> {/* Combined header */}
             <TableHead>Category</TableHead>
+            <TableHead>Price</TableHead>
+            <TableHead>Units Available</TableHead>
+            <TableHead>Size</TableHead>
+            {/* ... other table headers */}
           </TableRow>
         </TableHeader>
         <TableBody>
           {filteredProducts.map((product) => (
             <TableRow key={product.id}>
-              <TableCell>{product.name}</TableCell>
-              <TableCell>{product.price}</TableCell>
+              <TableCell className="flex items-center">
+                {" "}
+                {/* Flexbox for card layout */}
+                {product.image ? (
+                  <div
+                    style={{ position: "relative", width: 50, height: 50 }}
+                    className="mr-2"
+                  >
+                    {" "}
+                    {/* Added margin right */}
+                    <Image
+                      src={URL.createObjectURL(product.image)}
+                      alt={product.name}
+                      layout="fill"
+                      objectFit="cover"
+                      className="rounded"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-[50px] h-[50px] bg-gray-200 rounded flex items-center justify-center mr-2">
+                    No Image
+                  </div>
+                )}
+                <span>{product.name}</span>{" "}
+                {/* Product name next to the image */}
+              </TableCell>
               <TableCell>{product.category}</TableCell>
+              <TableCell>{product.price}</TableCell>
+              <TableCell>{product.unitsAvailable}</TableCell>
+              <TableCell>{product.size}</TableCell>
+              {/* ... other table cells */}
             </TableRow>
           ))}
         </TableBody>
-      </Table> */}
+      </Table>
     </div>
   );
 }
