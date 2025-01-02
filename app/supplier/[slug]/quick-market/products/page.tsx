@@ -53,6 +53,15 @@ export default function Products() {
   };
 
   const slug = "your-dynamic-slug";
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+
+  const handleProductClick = (product: Product) => {
+    setSelectedProduct(product);
+  };
+
+  const handleCloseView = () => {
+    setSelectedProduct(null);
+  };
 
   return (
     <div className="p-6">
@@ -106,7 +115,10 @@ export default function Products() {
         <TableBody>
           {filteredProducts.map((product) => (
             <TableRow key={product.id}>
-              <TableCell className="flex items-center">
+              <TableCell
+                onClick={() => handleProductClick(product)}
+                className="flex items-center"
+              >
                 {" "}
                 {/* Flexbox for card layout */}
                 {product.image ? (
@@ -132,15 +144,83 @@ export default function Products() {
                 <span>{product.name}</span>{" "}
                 {/* Product name next to the image */}
               </TableCell>
-              <TableCell>{product.category}</TableCell>
-              <TableCell>{product.price}</TableCell>
-              <TableCell>{product.unitsAvailable}</TableCell>
-              <TableCell>{product.size}</TableCell>
+              <TableCell onClick={() => handleProductClick(product)}>
+                {product.category}
+              </TableCell>
+              <TableCell onClick={() => handleProductClick(product)}>
+                {product.price}
+              </TableCell>
+              <TableCell onClick={() => handleProductClick(product)}>
+                {product.unitsAvailable}
+              </TableCell>
+              <TableCell onClick={() => handleProductClick(product)}>
+                {product.size}
+              </TableCell>
               {/* ... other table cells */}
             </TableRow>
           ))}
         </TableBody>
       </Table>
+
+      {/* View Product Dialog */}
+      <Dialog open={!!selectedProduct} onOpenChange={handleCloseView}>
+        {" "}
+        {/* Open if selectedProduct is not null */}
+        <DialogContent className="sm:max-w-[500px] bg-white rounded-lg p-6 shadow-lg">
+          <style jsx>{`
+            .dialog-content-scrollable {
+              overflow-y: auto;
+              max-height: 80vh;
+            }
+          `}</style>{" "}
+          {/* Apply the class */}
+          {selectedProduct && (
+            <div className="dialog-content-scrollable">
+              <>
+                {selectedProduct.image && (
+                  <div className="mb-4 flex justify-center">
+                    {" "}
+                    {/* Center the image */}
+                    <Image
+                      src={URL.createObjectURL(selectedProduct.image)}
+                      alt={selectedProduct.name}
+                      width={200}
+                      height={200}
+                      style={{ objectFit: "contain" }}
+                    />
+                  </div>
+                )}
+                <div className="grid grid-cols-1 gap-4">
+                  {Object.entries(selectedProduct)
+                    .filter(([key]) => key !== "id" && key !== "image")
+                    .map(([key, value]) => (
+                      <div key={key}>
+                        <p className="font-medium">
+                          {key.replace(/([A-Z])/g, " $1").trim()}:{" "}
+                          <span className="font-normal">{value}</span>
+                        </p>
+                      </div>
+                    ))}
+                </div>
+                {/* <DialogFooter>
+                <Button onClick={handleCloseView}>Close</Button>
+              </DialogFooter> */}
+                <DialogFooter className="mt-6 pt-6 border-t border-gray-200">
+                  {" "}
+                  {/* Added margin and border */}
+                  <Button
+                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                    onClick={handleCloseView}
+                  >
+                    Close
+                  </Button>
+                  {/* Red Button with Tailwind */}
+                </DialogFooter>
+              </>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
