@@ -69,7 +69,6 @@ export default function Products() {
         {" "}
         <div className="flex items-center ml-auto">
           {" "}
-          {/* Right-aligned container */}
           <Link
             href={`/supplier/${slug}/inventory/stores`}
             className="flex items-center mr-4"
@@ -81,7 +80,6 @@ export default function Products() {
               </div>
             </Button>
           </Link>
-          {/* Main header flex container */}
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button className="mr-2">Add product</Button>
@@ -100,16 +98,14 @@ export default function Products() {
         </div>
       </div>
 
-      {/* Display products in a table (for specific properties) */}
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Product Name</TableHead> {/* Combined header */}
+            <TableHead>Product Name</TableHead>
             <TableHead>Category</TableHead>
             <TableHead>Price</TableHead>
             <TableHead>Units Available</TableHead>
             <TableHead>Size</TableHead>
-            {/* ... other table headers */}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -120,14 +116,12 @@ export default function Products() {
                 className="flex items-center"
               >
                 {" "}
-                {/* Flexbox for card layout */}
                 {product.image ? (
                   <div
                     style={{ position: "relative", width: 50, height: 50 }}
                     className="mr-2"
                   >
                     {" "}
-                    {/* Added margin right */}
                     <Image
                       src={URL.createObjectURL(product.image)}
                       alt={product.name}
@@ -142,7 +136,6 @@ export default function Products() {
                   </div>
                 )}
                 <span>{product.name}</span>{" "}
-                {/* Product name next to the image */}
               </TableCell>
               <TableCell onClick={() => handleProductClick(product)}>
                 {product.category}
@@ -156,16 +149,13 @@ export default function Products() {
               <TableCell onClick={() => handleProductClick(product)}>
                 {product.size}
               </TableCell>
-              {/* ... other table cells */}
             </TableRow>
           ))}
         </TableBody>
       </Table>
 
-      {/* View Product Dialog */}
       <Dialog open={!!selectedProduct} onOpenChange={handleCloseView}>
         {" "}
-        {/* Open if selectedProduct is not null */}
         <DialogContent className="sm:max-w-[500px] bg-white rounded-lg p-6 shadow-lg">
           <style jsx>{`
             .dialog-content-scrollable {
@@ -173,14 +163,12 @@ export default function Products() {
               max-height: 80vh;
             }
           `}</style>{" "}
-          {/* Apply the class */}
           {selectedProduct && (
             <div className="dialog-content-scrollable">
               <>
                 {selectedProduct.image && (
                   <div className="mb-4 flex justify-center">
                     {" "}
-                    {/* Center the image */}
                     <Image
                       src={URL.createObjectURL(selectedProduct.image)}
                       alt={selectedProduct.name}
@@ -202,19 +190,15 @@ export default function Products() {
                       </div>
                     ))}
                 </div>
-                {/* <DialogFooter>
-                <Button onClick={handleCloseView}>Close</Button>
-              </DialogFooter> */}
+
                 <DialogFooter className="mt-6 pt-6 border-t border-gray-200">
                   {" "}
-                  {/* Added margin and border */}
                   <Button
                     className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
                     onClick={handleCloseView}
                   >
                     Close
                   </Button>
-                  {/* Red Button with Tailwind */}
                 </DialogFooter>
               </>
             </div>
