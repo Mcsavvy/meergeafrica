@@ -1,4 +1,5 @@
-// components/supplier-dashboard/popupScreen/add-product.tsx
+import InputMask from "react-input-mask";
+import { ChangeEvent, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -16,31 +17,30 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useState } from "react";
 
 interface Product {
   id: number;
   name: string;
+  image: File | null;
+  manufacturer: string;
   price: string;
-  category: string;
-  image?: File | null;
-  expiryDate?: string;
-  availability?: string;
-  manufacturer?: string;
-  deliveryTime?: string;
-  pickupOption?: string;
-  unitsAvailable?: string;
-  description?: string;
-  size?: string;
-  weight?: string;
+  unitsAvailable: string;
+  size: string;
+  weight: string;
+  expiryDate: string;
+  description: string;
+  availability: string;
+  deliveryTime: string;
+  pickupOption: string;
 }
 
+// Define the AddProductDialogProps interface
 interface AddProductDialogProps {
   open: boolean;
   setOpen: (open: boolean) => void;
-  onAdd: (newProduct: Product) => void;
+  onAdd: (product: Product) => void;
   newProduct: Omit<Product, "id">;
-  setNewProduct: (newProduct: Omit<Product, "id">) => void;
+  setNewProduct: (product: Omit<Product, "id">) => void;
 }
 
 const AddProductDialog: React.FC<AddProductDialogProps> = ({
@@ -50,14 +50,109 @@ const AddProductDialog: React.FC<AddProductDialogProps> = ({
   newProduct,
   setNewProduct,
 }) => {
+  const [errors, setErrors] = useState<{
+    [key in keyof Omit<Product, "id">]?: string;
+  }>({});
+
+  const validateForm = (): boolean => {
+    let newErrors: { [key in keyof Omit<Product, "id">]?: string } = {};
+
+    // Required field checks for all fields
+    if (!newProduct.name?.trim()) newErrors.name = "Product name is required";
+    else if (!/^[a-zA-Z\s]+$/.test(newProduct.name))
+      newErrors.name = "Input a correct name (letters and spaces only)";
+
+    if (!newProduct.image) newErrors.image = "Product image is required";
+    else {
+      const allowedTypes = ["image/png", "image/jpeg", "image/jpg"];
+      if (!allowedTypes.includes(newProduct.image.type)) {
+        newErrors.image = "Only PNG and JPEG images are allowed";
+      }
+    }
+
+    if (!newProduct.manufacturer?.trim())
+      newErrors.manufacturer = "Manufacturer's name is required";
+    else if (!/^[a-zA-Z\s]+$/.test(newProduct.manufacturer))
+      newErrors.manufacturer = "Manufacturer's name must contain only letters";
+
+    if (!newProduct.price?.trim()) newErrors.price = "Price is required";
+    else {
+      const sanitizedPrice = newProduct.price.replace(/,/g, "");
+      if (!/^\d+(\.\d{1,2})?$/.test(sanitizedPrice))
+        newErrors.price = "Invalid price format. Use 0.00 or 0,000.00 format";
+    }
+
+    if (!newProduct.unitsAvailable?.trim())
+      newErrors.unitsAvailable = "Units available is required";
+    else if (!/^\d+$/.test(newProduct.unitsAvailable))
+      newErrors.unitsAvailable = "Units available must be a whole number";
+
+    if (!newProduct.size?.trim()) newErrors.size = "Size is required";
+    else if (!/^\d+$/.test(newProduct.size))
+      newErrors.size = "Size must be a number";
+
+    if (!newProduct.weight?.trim()) newErrors.weight = "Weight is required";
+    else if (!/^\d+(\.\d+)?(G\/kg\/L)?$/.test(newProduct.weight))
+      newErrors.weight = "Invalid weight format. Use 0.00G/kg/L format";
+
+    if (!newProduct.expiryDate?.trim())
+      newErrors.expiryDate = "Expiry date is required";
+    else if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(newProduct.expiryDate))
+      newErrors.expiryDate = "Invalid expiry date format. Use MM/YY";
+
+    if (!newProduct.description?.trim())
+      newErrors.description = "Product description is required";
+
+    if (!newProduct.availability)
+      newErrors.availability = "Availability is required";
+
+    if (!newProduct.deliveryTime)
+      newErrors.deliveryTime = "Delivery time is required";
+
+    if (!newProduct.pickupOption)
+      newErrors.pickupOption = "Pickup option is required";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleChange = (
+    event: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value, files } = event.target;
+    if (files) {
+      setNewProduct({ ...newProduct, [name]: files[0] });
+    } else {
+      setNewProduct({ ...newProduct, [name]: value });
+    }
+  };
+
   const handleAdd = () => {
-    onAdd({ ...newProduct, id: Date.now() } as Product); // Type assertion
-    setNewProduct({
-      name: "",
-      price: "",
-      category: "",
-    });
-    setOpen(false);
+    if (validateForm()) {
+      onAdd({ ...newProduct, id: Date.now() } as Product);
+      setNewProduct({
+        name: "",
+        price: "",
+        category: "",
+      });
+      setErrors({});
+      setOpen(false);
+    }
+  };
+
+  const fieldLabels: { [key: string]: string } = {
+    name: "Product Name",
+    image: "Product Image",
+    manufacturer: "Manufacturer's Name",
+    price: "Price (₦)",
+    unitsAvailable: "Units Available",
+    size: "Size",
+    weight: "Weight (kg/L)",
+    expiryDate: "Expiry Date (MM/YY)",
+    availability: "Availability Status",
+    deliveryTime: "Delivery Time Estimate",
+    pickupOption: "Pick Up Option",
+    description: "Product Description",
   };
 
   const leftFields = [
@@ -84,6 +179,7 @@ const AddProductDialog: React.FC<AddProductDialogProps> = ({
           <DialogTitle>Add Product</DialogTitle>
         </DialogHeader>
         <div className="flex gap-4 py-4">
+          {/* ... (JSX for form fields - same as before, but using handleChange) */}
           <div className="w-1/2">
             {leftFields.map((key) => (
               <div key={key} className="mb-4">
@@ -91,43 +187,37 @@ const AddProductDialog: React.FC<AddProductDialogProps> = ({
                   htmlFor={key}
                   className="block text-sm font-medium leading-6 text-gray-900"
                 >
-                  {key.replace(/([A-Z])/g, " $1").trim()}
+                  {fieldLabels[key] || key.replace(/([A-Z])/g, " $1").trim()}
                 </Label>
                 {key === "image" ? (
                   <Input
                     type="file"
                     id={key}
-                    onChange={(e) =>
-                      setNewProduct({
-                        ...newProduct,
-                        image: e.target.files?.[0] || null,
-                      })
-                    }
+                    name={key} // Add name attribute
+                    onChange={handleChange}
                   />
-                ) : key === "unitsAvailable" ? (
+                ) : key === "unitsAvailable" || key === "size" ? (
                   <Input
                     type="number"
                     id={key}
-                    value={newProduct[key as keyof Omit<Product, "id">] || ""}
-                    onChange={(e) =>
-                      setNewProduct({
-                        ...newProduct,
-                        unitsAvailable: e.target.value,
-                      })
-                    }
+                    name={key} // Add name attribute
+                    value={newProduct[key] || ""}
+                    onChange={handleChange}
                   />
                 ) : (
                   <Input
                     type="text"
                     id={key}
-                    value={newProduct[key as keyof Omit<Product, "id">] || ""}
-                    onChange={(e) =>
-                      setNewProduct({ ...newProduct, [key]: e.target.value })
-                    }
+                    name={key} // Add name attribute
+                    value={newProduct[key] || ""}
+                    onChange={handleChange}
                     placeholder={`Enter ${key
                       .replace(/([A-Z])/g, " $1")
                       .trim()}`}
                   />
+                )}
+                {errors[key] && (
+                  <p className="text-red-500 text-sm mt-1">{errors[key]}</p>
                 )}
               </div>
             ))}
@@ -139,12 +229,13 @@ const AddProductDialog: React.FC<AddProductDialogProps> = ({
                   htmlFor={key}
                   className="block text-sm font-medium leading-6 text-gray-900"
                 >
-                  {key.replace(/([A-Z])/g, " $1").trim()}
+                  {fieldLabels[key] || key.replace(/([A-Z])/g, " $1").trim()}
                 </Label>
                 {key === "availability" ||
                 key === "deliveryTime" ||
                 key === "pickupOption" ? (
                   <Select
+                    name={key} // Add name attribute
                     onValueChange={(value) =>
                       setNewProduct({ ...newProduct, [key]: value })
                     }
@@ -182,17 +273,40 @@ const AddProductDialog: React.FC<AddProductDialogProps> = ({
                     </SelectContent>
                   </Select>
                 ) : (
-                  <Input
-                    type="text"
-                    id={key}
-                    value={newProduct[key as keyof Omit<Product, "id">] || ""}
-                    onChange={(e) =>
-                      setNewProduct({ ...newProduct, [key]: e.target.value })
-                    }
-                    placeholder={`Enter ${key
-                      .replace(/([A-Z])/g, " $1")
-                      .trim()}`}
-                  />
+                  <>
+                    {key === "expiryDate" ? (
+                      <InputMask
+                        mask="99/99"
+                        maskChar="_"
+                        value={newProduct.expiryDate || ""}
+                        onChange={handleChange} // Use handleChange
+                        placeholder="MM/YY"
+                      >
+                        {(inputProps) => (
+                          <Input
+                            {...inputProps}
+                            type="text"
+                            id={key}
+                            name={key}
+                          />
+                        )}
+                      </InputMask>
+                    ) : (
+                      <Input
+                        type="text"
+                        id={key}
+                        name={key} // Add name attribute
+                        value={newProduct[key] || ""}
+                        onChange={handleChange}
+                        placeholder={`Enter ${key
+                          .replace(/([A-Z])/g, " $1")
+                          .trim()}`}
+                      />
+                    )}
+                  </>
+                )}
+                {errors[key] && (
+                  <p className="text-red-500 text-sm mt-1">{errors[key]}</p>
                 )}
               </div>
             ))}
