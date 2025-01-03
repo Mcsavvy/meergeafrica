@@ -30,12 +30,11 @@ type Product = {
   name: string;
   price: string;
   category: string;
+  image?: File;
 };
 
 export default function Products() {
-  const [products, setProducts] = useState<
-    { id: number; name: string; price: string; category: string }[]
-  >([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [newProduct, setNewProduct] = useState<Omit<Product, "id">>({
@@ -61,6 +60,37 @@ export default function Products() {
 
   const handleCloseView = () => {
     setSelectedProduct(null);
+  };
+
+  const getDisplayName = (key: string): string => {
+    switch (key) {
+      case "name":
+        return "Product Name";
+      case "image":
+        return "Product Image";
+      case "manufacturer":
+        return "Manufacturer's Name";
+      case "price":
+        return "Price";
+      case "unitsAvailable":
+        return "Units Available";
+      case "size":
+        return "Size";
+      case "weight":
+        return "Weight";
+      case "expiryDate":
+        return "Expiry Date";
+      case "availability":
+        return "Availability";
+      case "deliveryTime":
+        return "Delivery Time";
+      case "pickupOption":
+        return "Pickup Option";
+      case "description":
+        return "Description";
+      default:
+        return key.replace(/([A-Z])/g, " $1").trim(); // Default for other keys
+    }
   };
 
   return (
@@ -180,14 +210,30 @@ export default function Products() {
                 )}
                 <div className="grid grid-cols-1 gap-4">
                   {Object.entries(selectedProduct)
-                    .filter(([key]) => key !== "id" && key !== "image")
+                    // .filter(([key]) => key !== "id" && key !== "image")
+                    .filter(
+                      ([key, value]) =>
+                        key !== "id" &&
+                        key !== "image" &&
+                        key !== "category" &&
+                        value !== undefined &&
+                        value !== null &&
+                        value !== ""
+                    )
                     .map(([key, value]) => (
-                      <div key={key}>
-                        <p className="font-medium">
-                          {key.replace(/([A-Z])/g, " $1").trim()}:{" "}
-                          <span className="font-normal">{value}</span>
-                        </p>
+                      <div key={key} className="flex items-start">
+                        <dt className="font-medium capitalize w-1/3">
+                          {getDisplayName(key)}:{" "}
+                          {/* Use getDisplayName function */}
+                        </dt>
+                        <dd className="font-normal w-2/3">{value}</dd>
                       </div>
+                      // <div key={key}>
+                      //   <p className="font-medium">
+                      //     {key.replace(/([A-Z])/g, " $1").trim()}:{" "}
+                      //     <span className="font-normal">{value}</span>
+                      //   </p>
+                      // </div>
                     ))}
                 </div>
 
