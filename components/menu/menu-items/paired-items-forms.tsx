@@ -77,7 +77,6 @@ export const CreatePairedItemForm = ({
   const form = useZodForm({
     schema: PairedItemFormSchema,
     defaultValues: {
-      // @ts-expect-error ...
       name: initialName,
       price: 0,
       description: "",
@@ -217,9 +216,9 @@ export const EditPairedItemForm = ({
   const form = useZodForm({
     schema: PairedItemFormSchema,
     defaultValues: {
-      // @ts-expect-error ...
       name: pairedItem?.name,
       price: pairedItem?.price,
+      // @ts-expect-error ...
       image: pairedItem?.image,
     },
   });
