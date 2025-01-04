@@ -55,3 +55,16 @@ export type StockItem = Omit<z.infer<typeof StockItemSchema>, "image"> & {
   image?: string;
 };
 export type StockItemCreate = z.infer<typeof StockItemCreateSchema>;
+
+export const StockItemUpdateSchema = z.object({
+  quantity: z.number().min(0, "Quantity must be greater than or equal to 0"),
+  lowStockThreshold: z
+    .number()
+    .min(0, "Low stock threshold must be greater than or equal to 0"),
+  purchasePrice: z
+    .number()
+    .min(0, "Purchase price must be greater than or equal to 0"),
+  image: z.union([z.instanceof(File), z.string()]).optional(),
+});
+
+export type StockItemUpdate = z.infer<typeof StockItemUpdateSchema>;

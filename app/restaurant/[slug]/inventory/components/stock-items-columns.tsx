@@ -36,6 +36,9 @@ const StockItemActions: React.FC<StockItem> = ({ id }) => {
         <DropdownMenuItem data-modal-trigger={`view-stock-item/${id}`}>
           View
         </DropdownMenuItem>
+        <DropdownMenuItem data-modal-trigger={`edit-stock-item/${id}`}>
+          Edit
+        </DropdownMenuItem>
         <DropdownMenuItem className="text-red-600">Delete</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

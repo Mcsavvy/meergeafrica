@@ -3,6 +3,7 @@ import {
   StockItem,
   StoreCreate,
   StockItemCreate,
+  StockItemUpdate,
 } from "../schema/inventory";
 import { createStore } from "zustand/vanilla";
 import { convertToBase64 } from "../utils";
@@ -18,7 +19,7 @@ export type InventoryActions = {
   createStockItem: (data: StockItemCreate) => Promise<StockItem>;
   updateStockItem: (
     stockItem: StockItem,
-    update: Partial<Omit<StockItem, "id" | "store">>
+    update: StockItemUpdate
   ) => Promise<void>;
   searchStockItems: (query: string) => Promise<StockItem[]>;
 };

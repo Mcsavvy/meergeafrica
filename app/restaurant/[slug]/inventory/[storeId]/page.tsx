@@ -18,6 +18,7 @@ import { stockColumns } from "../components/stock-items-columns";
 import StockItemsTable from "../components/stock-items-table";
 import { StockItemsFilter } from "../components/stock-item-filter";
 import ViewStockModal from "../components/view-stock-item-modal";
+import EditStockModal from "../components/edit-stock-item-modal";
 
 const StoreDetailView = () => {
   const store = useCurrentStore();
@@ -53,6 +54,7 @@ const StoreDetailView = () => {
     <div className="h-[calc(100vh-80px)] overflow-y-auto p-2 lg:p-4">
       <CreateStockModal />
       <ViewStockModal />
+      <EditStockModal />
       <div className="space-y-4 bg-white p-6">
         <div className="flex flex-col md:flex-row gap-4 items-start justify-between">
           <h2 className="text-xl font-semibold">{store.name}</h2>
