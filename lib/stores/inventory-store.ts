@@ -22,6 +22,7 @@ export type InventoryActions = {
     update: StockItemUpdate
   ) => Promise<void>;
   searchStockItems: (query: string) => Promise<StockItem[]>;
+  deleteStockItem: (stockItemId: StockItem["id"]) => Promise<void>;
 };
 
 export type InventoryStore = InventoryState & InventoryActions;
@@ -98,5 +99,10 @@ export const createInventoryStore = (
         item.name.toLowerCase().includes(query.toLowerCase())
       );
     },
+    deleteStockItem: async (stockItemId) =>
+      set((state) => ({
+        stores: state.stores,
+        stockItems: state.stockItems.filter((item) => item.id !== stockItemId),
+      })),
   }));
 };

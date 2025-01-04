@@ -19,6 +19,7 @@ import StockItemsTable from "../components/stock-items-table";
 import { StockItemsFilter } from "../components/stock-item-filter";
 import ViewStockModal from "../components/view-stock-item-modal";
 import EditStockModal from "../components/edit-stock-item-modal";
+import DeleteStockModal from "../components/delete-stock-item-modal";
 
 const StoreDetailView = () => {
   const store = useCurrentStore();
@@ -55,6 +56,7 @@ const StoreDetailView = () => {
       <CreateStockModal />
       <ViewStockModal />
       <EditStockModal />
+      <DeleteStockModal />
       <div className="space-y-4 bg-white p-6">
         <div className="flex flex-col md:flex-row gap-4 items-start justify-between">
           <h2 className="text-xl font-semibold">{store.name}</h2>
