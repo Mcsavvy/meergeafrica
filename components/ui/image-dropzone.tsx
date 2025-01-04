@@ -9,7 +9,7 @@ type ImageDropzoneProps = {
   id?: string;
   name: string;
   required?: boolean;
-  value?: File;
+  value?: File | string;
   onChange?: (file?: File) => void;
 };
 
