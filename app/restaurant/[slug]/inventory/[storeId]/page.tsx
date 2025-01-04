@@ -5,7 +5,7 @@ import {
   useCurrentStore,
 } from "@/lib/contexts/inventory-context";
 
-import AddStockModal from "../components/add-stock-item-modal";
+import CreateStockModal from "../components/create-stock-item-modal";
 import {
   getCoreRowModel,
   useReactTable,
@@ -51,7 +51,7 @@ const StoreDetailView = () => {
 
   return (
     <div className="h-[calc(100vh-80px)] overflow-y-auto p-2 lg:p-4">
-      <AddStockModal />
+      <CreateStockModal />
       <ViewStockModal />
       <div className="space-y-4 bg-white p-6">
         <div className="flex flex-col md:flex-row gap-4 items-start justify-between">

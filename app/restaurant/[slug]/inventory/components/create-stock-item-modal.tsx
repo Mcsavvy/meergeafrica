@@ -24,8 +24,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import CreatableSelect from "react-select/creatable";
 
-const categories = [
+const predefinedCategories = [
   "Grain Products",
   "Vegetables",
   "Fruits",
@@ -33,12 +34,23 @@ const categories = [
   "Dairy",
   "Beverages",
   "Spices",
-  "Others",
 ];
 
-const measuringUnits = ["Kg", "G"];
+const predefinedMeasuringUnits = [
+  "Kg",
+  "G",
+  "L",
+  "ml",
+  "oz",
+  "lb",
+  "cup",
+  "tsp",
+  "tbsp",
+  "piece",
+  "dozen",
+];
 
-const AddStockModal = () => {
+const CreateStockModal = () => {
   const { createStockItem } = useInventoryStore();
   const [open, setOpen] = React.useState(false);
   const currentStore = useCurrentStore();
@@ -77,7 +89,7 @@ const AddStockModal = () => {
           isOpen={open}
           onOpen={() => setOpen(true)}
           onClose={() => setOpen(false)}
-          id="add-stock-modal"
+          id="create-stock-item-modal"
         >
           <Modal.Header>
             <h2 className="text-xl font-semibold">Add Stock Item</h2>
@@ -188,18 +200,22 @@ const AddStockModal = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="required">Category</FormLabel>
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {categories.map((category) => (
-                          <SelectItem key={category} value={category}>
-                            {category}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <CreatableSelect
+                      isClearable
+                      value={
+                        field.value
+                          ? { label: field.value, value: field.value }
+                          : null
+                      }
+                      onChange={(newValue) =>
+                        field.onChange(newValue ? newValue.value : "")
+                      }
+                      options={predefinedCategories.map((category) => ({
+                        label: category,
+                        value: category,
+                      }))}
+                      placeholder="Select or create category"
+                    />
                     <FormMessage />
                   </FormItem>
                 )}
@@ -233,21 +249,22 @@ const AddStockModal = () => {
                   <FormItem>
                     <FormLabel className="required">Measuring Unit</FormLabel>
                     <FormControl>
-                      <Select
-                        value={field.value}
-                        onValueChange={field.onChange}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select measuring unit" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {measuringUnits.map((unit) => (
-                            <SelectItem key={unit} value={unit}>
-                              {unit}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <CreatableSelect
+                        isClearable
+                        value={
+                          field.value
+                            ? { label: field.value, value: field.value }
+                            : null
+                        }
+                        onChange={(newValue) =>
+                          field.onChange(newValue ? newValue.value : "")
+                        }
+                        options={predefinedMeasuringUnits.map((unit) => ({
+                          label: unit,
+                          value: unit,
+                        }))}
+                        placeholder="Select or create measuring unit"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -270,6 +287,7 @@ const AddStockModal = () => {
                       <Input
                         type="number"
                         placeholder="0.00Kg/G"
+                        min={1}
                         {...field}
                         onChange={(e) => field.onChange(Number(e.target.value))}
                       />
@@ -316,4 +334,4 @@ const AddStockModal = () => {
   );
 };
 
-export default AddStockModal;
+export default CreateStockModal;
