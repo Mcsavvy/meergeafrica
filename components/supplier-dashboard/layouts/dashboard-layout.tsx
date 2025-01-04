@@ -1,6 +1,9 @@
 "use client";
+import { useRouter } from "next/navigation";
+import { TopSellingProducts } from "../top-selling-products";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import DashboardNavbar from "@/components/supplier-dashboard/layouts/navBar";
 import {
   ChevronDown,
   LayoutDashboard,
@@ -14,6 +17,11 @@ import {
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+
+interface Product {
+  name: string;
+  // ... other product properties
+}
 
 const sidebarItems = [
   {
@@ -74,6 +82,51 @@ const sidebarItems = [
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [openItems, setOpenItems] = useState<string[]>([]);
+  const router = useRouter();
+  const [currentPage, setCurrentPage] = useState<string | undefined>(undefined);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true); // Add loading state
+  const [error, setError] = useState<string | null>(null); // Add error state
+
+  useEffect(() => {
+    if (router.isReady) {
+      // Your code that uses router object (e.g., router.pathname)
+      const pathParts = router.pathname.split("/");
+      if (pathParts.length > 0 && pathParts[1] !== "supplier") {
+        setCurrentPage(
+          pathParts[1].charAt(0).toUpperCase() + pathParts[1].slice(1)
+        );
+      } else if (pathParts.includes("supplier")) {
+        setCurrentPage("Supplier");
+      } else {
+        setCurrentPage(undefined);
+      }
+      console.log("Router is ready:", router); // Optional debug log
+    }
+  }, [router]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch("/api/products");
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data: Product[] = await response.json();
+        setProducts(data);
+      } catch (err) {
+        // More descriptive error handling
+        console.error("Error fetching products:", err);
+        setError(
+          "An error occurred while fetching products. Please try again later."
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const toggleItem = (title: string) => {
     setOpenItems((prev) =>
@@ -82,6 +135,14 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         : [...prev, title]
     );
   };
+
+  if (loading) {
+    return <div>Loading...</div>; // Or a loading spinner
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>; // Display error message
+  }
 
   return (
     <div className="flex min-h-screen">
@@ -145,7 +206,12 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       </aside>
 
       {/* Main content */}
-      <main className="ml-64 flex-1 p-8">{children}</main>
+      <div className="flex-1 flex flex-col">
+        <DashboardNavbar data={products} currentPage={currentPage} />{" "}
+        {/* Navbar is rendered HERE */}
+        <main className="flex-grow p-8">{children}</main>
+      </div>
+      {/* <main className="ml-64 flex-1 p-8">{children}</main> */}
     </div>
   );
 }
