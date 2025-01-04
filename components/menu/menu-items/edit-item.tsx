@@ -61,7 +61,6 @@ const EditMenuItem = ({ menuItem, isOpen, onClose }: EditMenuItemProps) => {
   const form = useZodForm({
     schema: MenuItemFormSchema,
     defaultValues: {
-      // @ts-expect-error ...
       name: menuItem.name,
       image: menuItem.image,
       price: menuItem.price,

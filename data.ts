@@ -1,3 +1,4 @@
+import { StockItem, Store } from "./lib/schema/inventory";
 import { uniqueId } from "./lib/utils";
 import { AddOn, MenuItem, PairedItem } from "./types/menu";
 
@@ -101,5 +102,71 @@ export const demoMenuItems: MenuItem[] = [
     size: { amount: 1, unit: "kg" },
     pairedItems: [demoPairedItems[0].id, demoPairedItems[1].id],
     addOns: [demoAddOns[0].id, demoAddOns[1].id],
+  },
+];
+
+export const demoStores: Store[] = [
+  {
+    id: "default",
+    name: "Stores",
+    description: "Default store created by the system",
+    image: "/images/store/store-1.png",
+  },
+  {
+    id: "chicken-hotspot",
+    name: "Chicken Hotspot",
+    description: "Your go-to spot for chicken and frozen foods",
+    image: "/images/store/store-2.png",
+  },
+];
+
+export const demoStockItems: StockItem[] = [
+  {
+    id: uniqueId(),
+    name: "Frozen Chicken Wings",
+    store: demoStores[1].id,
+    image: "/images/store/chicken-wings.png",
+    expirationDate: { month: 12, year: 2025 },
+    measuringUnit: "kg",
+    lowStockThreshold: 5,
+    category: "Frozen Foods",
+    purchasePrice: 1500,
+    quantity: 10,
+  },
+  {
+    id: uniqueId(),
+    name: "Frozen Chicken Drumsticks",
+    store: demoStores[1].id,
+    image: "/images/store/chicken-drumsticks.png",
+    expirationDate: { month: 12, year: 2025 },
+    measuringUnit: "kg",
+    lowStockThreshold: 5,
+    category: "Frozen Foods",
+    purchasePrice: 1500,
+    quantity: 10,
+  },
+  {
+    id: uniqueId(),
+    name: "Frozen Chicken Thighs",
+    store: demoStores[1].id,
+    image: "/images/store/chicken-thighs.png",
+    expirationDate: { month: 12, year: 2025 },
+    measuringUnit: "kg",
+    lowStockThreshold: 5,
+    category: "Frozen Foods",
+    purchasePrice: 1500,
+    quantity: 10,
+  },
+  {
+    id: uniqueId(),
+    name: "Frozen Chicken Breast",
+    store: demoStores[1].id,
+    image: "/images/store/chicken-breast.png",
+    expirationDate: { month: 12, year: 2025 },
+    measuringUnit: "kg",
+    lowStockThreshold: 5,
+    category: "Frozen Foods",
+    purchasePrice: 1500,
+    quantity: 10,
   },
 ];

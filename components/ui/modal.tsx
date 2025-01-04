@@ -1,13 +1,18 @@
 "use client";
 import React, { useCallback, useEffect, useState } from "react";
 import { X } from "lucide-react";
+import { match } from "path-to-regexp";
 
-type ModalProps = {
+// Type for route parameters
+type RouteParams = Record<string, string | number>;
+
+// Enhanced Modal Props with generic type parameter
+type ModalProps<T extends RouteParams> = {
   id?: string;
   layer?: "primary" | "secondary";
   isOpen?: boolean;
   onClose?: () => void;
-  onOpen?: () => void;
+  onOpen?: (params: T) => void;
   children: React.ReactNode;
   className?: string;
 };
@@ -27,26 +32,46 @@ type ModalFooterProps = {
   className?: string;
 };
 
-type ModalComponent = React.FC<ModalProps> & {
+type ModalComponent<T extends RouteParams> = React.FC<ModalProps<T>> & {
   Header: React.FC<ModalHeaderProps>;
   Body: React.FC<ModalBodyProps>;
   Footer: React.FC<ModalFooterProps>;
 };
 
-type ModalHandlers = {
-  open: () => void;
+type ModalHandlers<T extends RouteParams = RouteParams> = {
+  open: (params: T) => void;
+  toggle: (params: T) => void;
   close: () => void;
-  toggle: () => void;
+  pattern: string;
 };
 
 // Global modal state manager
 const modalRegistry = new Map<string, ModalHandlers>();
-const registerModal = (id: string, handlers: ModalHandlers) => {
-  modalRegistry.set(id, handlers);
+const registerModal = <T extends RouteParams>(
+  pattern: string,
+  handlers: ModalHandlers<T>
+) => {
+  // @ts-expect-error ...
+  modalRegistry.set(pattern, handlers);
 };
 
-const unregisterModal = (id: string) => {
-  modalRegistry.delete(id);
+const unregisterModal = (pattern: string) => {
+  modalRegistry.delete(pattern);
+};
+
+const findMatchingModal = (path: string) => {
+  for (const [pattern, handlers] of modalRegistry) {
+    console.log(`Checking pattern: ${path} against ${pattern}`);
+    const matchFn = match(pattern, { decode: decodeURIComponent });
+    const result = matchFn(path);
+    if (result) {
+      return {
+        handlers,
+        params: result.params as RouteParams,
+      };
+    }
+  }
+  return null;
 };
 
 // Global click handler
@@ -57,60 +82,53 @@ const documentClickHandler = (e: MouseEvent) => {
   const hide = target?.closest("[data-modal-hide]");
 
   if (trigger) {
-    const modalId = trigger.getAttribute("data-modal-trigger");
-    if (
-      !modalId ||
-      !modalRegistry.has(modalId) ||
-      modalRegistry.get(modalId) === undefined
-    ) {
-      console.error(`Modal with id ${modalId} not found`);
-    } else {
-      e.preventDefault();
-      const handlers = modalRegistry.get(modalId);
-      console.log(`Opening modal ${modalId}`);
-      handlers?.open();
+    const modalPath = trigger.getAttribute("data-modal-trigger");
+    if (!modalPath) return;
+
+    const match = findMatchingModal(modalPath);
+    if (!match) {
+      console.error(`No modal found matching path: ${modalPath}`);
+      return;
     }
+
+    e.preventDefault();
+    match.handlers.open(match.params);
   }
 
   if (toggle) {
-    const modalId = toggle.getAttribute("data-modal-toggle");
-    if (
-      !modalId ||
-      !modalRegistry.has(modalId) ||
-      modalRegistry.get(modalId) === undefined
-    ) {
-      console.error(`Modal with id ${modalId} not found`);
-    } else {
-      e.preventDefault();
-      const handlers = modalRegistry.get(modalId);
-      console.log(`Toggling modal ${modalId}`);
-      handlers?.toggle();
+    const modalPath = toggle.getAttribute("data-modal-toggle");
+    if (!modalPath) return;
+
+    const match = findMatchingModal(modalPath);
+    if (!match) {
+      console.error(`No modal found matching path: ${modalPath}`);
+      return;
     }
+
+    e.preventDefault();
+    match.handlers.toggle(match.params);
   }
 
   if (hide) {
-    let modalId = hide.getAttribute("data-modal-hide");
-    if ([null, undefined, "true"].includes(modalId)) {
+    let modalPath = hide.getAttribute("data-modal-hide");
+    if ([null, undefined, "true"].includes(modalPath)) {
       const modal = hide.closest("[role=dialog]");
-      modalId = modal?.id || null;
+      modalPath = modal?.id || null;
     }
-    if (
-      !modalId ||
-      !modalRegistry.has(modalId) ||
-      modalRegistry.get(modalId) === undefined
-    ) {
-      console.error(`Modal with id ${modalId} not found`);
-      console.log(typeof modalId);
-    } else {
-      e.preventDefault();
-      const handlers = modalRegistry.get(modalId);
-      console.log(`Closing modal ${modalId}`);
-      handlers?.close();
+    if (!modalPath) return;
+
+    const match = findMatchingModal(modalPath);
+    if (!match) {
+      console.error(`No modal found matching path: ${modalPath}`);
+      return;
     }
+
+    e.preventDefault();
+    match.handlers.close();
   }
 };
 
-const Modal: ModalComponent = ({
+const Modal: ModalComponent<RouteParams> = <T extends RouteParams>({
   id,
   layer = "primary",
   isOpen: externalIsOpen,
@@ -118,7 +136,7 @@ const Modal: ModalComponent = ({
   onOpen: externalOnOpen,
   children,
   className = "",
-}) => {
+}: ModalProps<T>) => {
   const [isOpen, setIsOpen] = useState(externalIsOpen || false);
   const [isAnimating, setIsAnimating] = useState(false);
 
@@ -127,17 +145,23 @@ const Modal: ModalComponent = ({
     externalOnClose?.();
   }, [externalOnClose]);
 
-  const handleOpen = useCallback(() => {
-    setIsOpen(true);
-    externalOnOpen?.();
-  }, [externalOnOpen]);
+  const handleOpen = useCallback(
+    (param: T) => {
+      setIsOpen(true);
+      externalOnOpen?.(param);
+    },
+    [externalOnOpen]
+  );
 
-  const handleToggle = useCallback(() => {
-    if (isOpen) {
-      handleClose();
-    }
-    handleOpen();
-  }, [isOpen, handleClose, handleOpen]);
+  const handleToggle = useCallback(
+    (param: T) => {
+      if (isOpen) {
+        handleClose();
+      }
+      handleOpen(param);
+    },
+    [isOpen, handleClose, handleOpen]
+  );
 
   useEffect(() => {
     if (id) {
@@ -145,6 +169,7 @@ const Modal: ModalComponent = ({
         open: handleOpen,
         close: handleClose,
         toggle: handleToggle,
+        pattern: id,
       });
 
       return () => unregisterModal(id);
@@ -154,7 +179,7 @@ const Modal: ModalComponent = ({
   // Sync with external state if provided
   useEffect(() => {
     if (externalIsOpen === true) {
-      handleOpen();
+      handleOpen({} as T);
     } else if (externalIsOpen === false) {
       handleClose();
     }
@@ -275,21 +300,33 @@ export const ModalSetup = () => {
   return null as React.ReactNode;
 };
 
-export const useModal = (id: string) => {
-  const open = useCallback(() => {
-    const handlers = modalRegistry.get(id);
-    handlers?.open();
-  }, [id]);
+export const useModal = <T extends RouteParams>(pattern: string) => {
+  const open = useCallback(
+    (params?: T) => {
+      const match = findMatchingModal(pattern);
+      if (match) {
+        match.handlers.open(params || ({} as T));
+      }
+    },
+    [pattern]
+  );
 
   const close = useCallback(() => {
-    const handlers = modalRegistry.get(id);
-    handlers?.close();
-  }, [id]);
+    const match = findMatchingModal(pattern);
+    if (match) {
+      match.handlers.close();
+    }
+  }, [pattern]);
 
-  const toggle = useCallback(() => {
-    const handlers = modalRegistry.get(id);
-    handlers?.toggle();
-  }, [id]);
+  const toggle = useCallback(
+    (params?: T) => {
+      const match = findMatchingModal(pattern);
+      if (match) {
+        match.handlers.toggle(params || ({} as T));
+      }
+    },
+    [pattern]
+  );
 
   return { open, close, toggle };
 };
