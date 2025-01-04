@@ -4,7 +4,7 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Inventory - Meerge Africa",
-  description: "Restaurant Menu",
+  description: "Restaurant Inventory",
 };
 
 export default function InventoryLayout({
