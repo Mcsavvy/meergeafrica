@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
+// import { useStore, Store } from "@/lib/contexts/supplier/storeContext";
+import { useStore, Store } from "@//providers/supplier/storeProvider";
 import { Card } from "@/components/ui/card";
 import { Plus, Building, Settings, ChevronRight } from "lucide-react";
 import Link from "next/link";
@@ -30,9 +32,8 @@ export default function Stores() {
   const [newStoreImage, setNewStoreImage] = useState("");
   const [newBusinessSection, setNewBusinessSection] = useState("");
   const [newStoreDescription, setNewStoreDescription] = useState("");
-  const [stores, setStores] = useState<
-    { name: string; image: string; section: string; description: string }[]
-  >([]); // State to hold created stores
+  const [newStoreAddress, setNewStoreAddress] = useState("");
+  const { setStoreName, stores, setStores } = useStore();
 
   const handleCreateStoreClick = () => {
     setIsCreateStoreOpen(true);
@@ -44,19 +45,65 @@ export default function Stores() {
     setNewStoreImage("");
     setNewBusinessSection("");
     setNewStoreDescription("");
+    setNewStoreAddress("");
   };
 
-  const handleCreateStoreSubmit = () => {
-    const newStore = {
+  // const handleCreateStoreSubmit = async () => {
+  //   const newStore: Store = {
+  //     name: newStoreName,
+  //     image: newStoreImage,
+  //     section: newBusinessSection,
+  //     description: newStoreDescription,
+  //     address: newStoreAddress,
+  //   };
+
+  //   try {
+  //     // Call the backend API to create the store
+  //     const createdStore = await createStore(newStore);
+
+  //     // Update the stores state with the created store data
+  //     setStores([...stores, createdStore]);
+  //     setStoreName(createdStore.name); // Update the current store name
+  //     handleCloseModal();
+  //   } catch (error) {
+  //     console.error("Error creating store:", error);
+  //     // Handle API errors gracefully (e.g., display an error message to the user)
+  //   }
+  // };
+
+  // const handleCreateStoreSubmit = async () => {
+  //   const newStore: Store = {
+  //     name: newStoreName,
+  //     image: newStoreImage, // Assuming you have a way to define a dummy image
+  //     section: newBusinessSection,
+  //     description: newStoreDescription,
+  //     address: newStoreAddress,
+  //   };
+
+  //   // Simulate store creation (no API call)
+  //   const createdStore = {
+  //     ...newStore,
+  //     id: crypto.randomUUID(), // Generate a unique ID for the simulated store
+  //   };
+
+  //   // Update the stores state with the simulated store data
+  //   setStores([...stores, createdStore]);
+  //   setStoreName(createdStore.name); // Update the current store name
+
+  //   handleCloseModal(); // Close the modal after simulated creation
+  // };
+
+  const handleCreateStoreSubmit = async () => {
+    const newStore: Store = {
       name: newStoreName,
       image: newStoreImage,
       section: newBusinessSection,
       description: newStoreDescription,
-      address: "Default Address", // Add the address property
+      address: newStoreAddress,
+      id: crypto.randomUUID(), // Generate a unique ID HERE
     };
-
-    // Add new store to the stores array
     setStores([...stores, newStore]);
+    setStoreName(newStore.name);
     handleCloseModal();
   };
 
