@@ -1,62 +1,52 @@
 // contexts/supplier/storeContext.tsx
 import React, { createContext, useState, useContext, useEffect } from "react";
+import { useInventoryStore } from './inventoryStore'; // Import the useInventoryStore hook
 
 export interface Store {
+  id: string;
   name: string;
-  image: string;
-  section: string;
+  businessSectionName?: string;
   description: string;
-  address: string;
+  image?: string;
+  location?: string;
 }
 
 interface StoreContextType {
-  storeName: string | null;
-  setStoreName: (name: string | null) => void;
-  stores: Store[];
-  setStores: (stores: Store[]) => void;
+  currentStore: Store | null;
+  setCurrentStore: (store: Store | null) => void;
 }
 
 const StoreContext = createContext<StoreContextType>({
-  storeName: null,
-  setStoreName: () => {},
-  stores: [], // Provide an empty array as the initial value for stores
-  setStores: () => {}, // Provide an empty function as the initial value for setStores
+  currentStore: null,
+  setCurrentStore: () => {},
 });
 
 export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
-  const [storeName, setStoreName] = useState<string | null>(null);
-  const [stores, setStores] = useState<Store[]>([]);
+  const [currentStore, setCurrentStore] = useState<Store | null>(null);
+  const { stores } = useInventoryStore();
 
   useEffect(() => {
-    const storedName = localStorage.getItem("storeName");
-    if (storedName) {
-      setStoreName(storedName);
+    const storedStoreId = localStorage.getItem("currentStoreId");
+    if (storedStoreId) {
+      const store = stores.find(s => s.id === storedStoreId);
+      if (store) {
+        setCurrentStore(store);
+      } else {
+        localStorage.removeItem("currentStoreId");
+      }
     }
-  }, []);
-
-  useEffect(() => {
-    if (storeName !== null) {
-      localStorage.setItem("storeName", storeName);
-    } else {
-      localStorage.removeItem("storeName");
-    }
-  }, [storeName]);
-
-  useEffect(() => {
-    const storedStores = localStorage.getItem("stores");
-    if (storedStores) {
-      setStores(JSON.parse(storedStores));
-    }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("stores", JSON.stringify(stores));
   }, [stores]);
 
+  useEffect(() => {
+    if (currentStore) {
+      localStorage.setItem("currentStoreId", currentStore.id);
+    } else {
+      localStorage.removeItem("currentStoreId");
+    }
+  }, [currentStore]);
+
   return (
-    <StoreContext.Provider
-      value={{ storeName, setStoreName, stores, setStores }}
-    >
+    <StoreContext.Provider value={{ currentStore, setCurrentStore }}>
       {children}
     </StoreContext.Provider>
   );
