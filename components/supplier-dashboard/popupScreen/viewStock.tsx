@@ -13,7 +13,8 @@ interface ViewStockModalProps {
 const ViewStockModal = ({ isOpen, onClose, stock }: ViewStockModalProps) => {
   if (!stock) return null;
 
-  const formatDate = (date: { month: number; year: number }) => {
+  const formatDate = (date?: { month: number; year: number }) => {
+    if (!date) return 'N/A';
     return `${String(date.month).padStart(2, '0')}/${date.year}`;
   };
 

@@ -1,6 +1,6 @@
 // contexts/supplier/storeContext.tsx
 import React, { createContext, useState, useContext, useEffect } from "react";
-import { useInventoryStore } from './inventoryStore'; // Import the useInventoryStore hook
+import { useInventoryStore } from './inventory-context'; // Import the useInventoryStore hook
 
 export interface Store {
   id: string;

@@ -131,10 +131,10 @@ export default function StockTable({
 
   const handleSelectAll = () => {
     if (isAllSelected) {
-      onItemSelect?.([]);
+      onSelectionChange([]);
     } else {
       const allIds = data.map(item => item.id);
-      onItemSelect?.(allIds);
+      onSelectionChange(allIds);
     }
   };
 

@@ -122,14 +122,18 @@ const CreateStockModal: React.FC<CreateStockModalProps> = ({ isOpen = false, onC
       setIsSubmitting(true);
       setError(null);
 
-      // Check for duplicate name in the same store
-      const isDuplicate = stockItems.some(
-        item => item.store === currentStore?.id && 
-               item.name.toLowerCase() === data.name.toLowerCase()
-      );
+      // Validate image size
+      if (data.image && data.image instanceof File && data.image.size > 5 * 1024 * 1024) {
+        throw new Error("Image size must be less than 5MB");
+      }
 
-      if (isDuplicate) {
-        throw new Error("A stock item with this name already exists in this store");
+      // Validate image type
+      if (
+        data.image &&
+        data.image instanceof File &&
+        !['image/jpeg', 'image/png', 'image/webp'].includes(data.image.type)
+      ) {
+        throw new Error("Only JPEG, PNG and WebP images are supported");
       }
 
       // Validate expiry date
@@ -138,16 +142,18 @@ const CreateStockModal: React.FC<CreateStockModalProps> = ({ isOpen = false, onC
         throw new Error("Expiry date cannot be backdated");
       }
 
-      // Transform the data to match the StockItem type
-      const transformedDataWithoutExpiryDate = {
+      // Convert expiryDate string to expirationDate object
+      const monthNum = parseInt(month);
+      const yearNum = parseInt(year);
+      const processedData = {
         ...data,
-        expiryDate: `${month}/${year}`,
-        quantity: Number(data.quantity),
-        lowStockThreshold: Number(data.lowStockThreshold),
-        purchasePrice: Number(data.purchasePrice)
+        expirationDate: {
+          month: monthNum,
+          year: yearNum
+        }
       };
 
-      await createStockItem(transformedDataWithoutExpiryDate);
+      await createStockItem(processedData);
       form.reset();
       onClose?.();
     } catch (err) {

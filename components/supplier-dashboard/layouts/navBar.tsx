@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useRef, useEffect, ChangeEvent, FormEvent, MouseEvent } from "react";
+import { useState, useRef, useEffect, ChangeEvent, FormEvent, MouseEvent as ReactMouseEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Search, Bell } from "lucide-react";
 
@@ -50,7 +50,7 @@ const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
     setIsDropdownOpen(!isDropdownOpen);
   };
 
-  const handleClickOutside = (event: MouseEvent) => {
+  const handleClickOutside = (event: globalThis.MouseEvent): void => {
     if (
       dropdownRef.current &&
       !dropdownRef.current.contains(event.target as Node)

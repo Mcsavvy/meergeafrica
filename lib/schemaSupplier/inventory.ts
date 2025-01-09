@@ -25,7 +25,20 @@ export const StockItemSchema = z.object({
   expirationDate: z.object({
     month: z.number(),
     year: z.number(),
-  }),
+  }).optional(),
+  expiryDate: z.string()
+    .refine((val) => val && val.length > 0, "Expiry date is required")
+    .refine(
+      (val) => /^\d{2}\/\d{4}$/.test(val),
+      "Invalid date format. Use MM/YYYY"
+    )
+    .refine((val) => {
+      const [month, year] = val.split('/').map(Number);
+      if (month < 1 || month > 12) return false;
+      const currentDate = new Date();
+      const inputDate = new Date(year, month - 1);
+      return inputDate > currentDate;
+    }, "Invalid expiry date. Must be a future date with valid month (1-12)"),
   measuringUnit: z.string(),
   lowStockThreshold: z.number(),
   category: z.string(),
@@ -39,7 +52,8 @@ export const StockItemSchema = z.object({
 });
 
 export const StockItemCreateSchema = z.object({
-  name: z.string().min(1, "Stock item name is required"),
+  name: z.string()
+    .refine((val) => val && val.length > 0, "Stock item name is required"),
   store: z.string(),
   image: z.instanceof(File).optional()
     .refine(
@@ -51,7 +65,11 @@ export const StockItemCreateSchema = z.object({
       "Only JPEG, PNG and WebP images are supported"
     ),
   expiryDate: z.string()
-    .regex(/^\d{2}\/\d{4}$/, "Invalid date format. Use MM/YYYY")
+    .refine((val) => val && val.length > 0, "Expiry date is required")
+    .refine(
+      (val) => /^\d{2}\/\d{4}$/.test(val),
+      "Invalid date format. Use MM/YYYY"
+    )
     .refine((val) => {
       const [month, year] = val.split('/').map(Number);
       if (month < 1 || month > 12) return false;
@@ -59,25 +77,47 @@ export const StockItemCreateSchema = z.object({
       const inputDate = new Date(year, month - 1);
       return inputDate > currentDate;
     }, "Invalid expiry date. Must be a future date with valid month (1-12)"),
-  measuringUnit: z.string().min(1, "Measuring unit is required"),
+  measuringUnit: z.string(),
+  category: z.string(),
+  stockType: z.string(),
   lowStockThreshold: z.number()
-    .min(0, "Low stock threshold must be 0 or greater")
-    .max(1000000, "Low stock threshold must be less than 1,000,000"),
-  category: z.string().min(1, "Category is required"),
+    .refine((val) => val >= 0, "Low stock threshold must be greater than or equal to 0"),
   purchasePrice: z.number()
-    .min(0, "Price must be 0 or greater")
-    .max(1000000000, "Price must be less than 1,000,000,000"),
+    .refine((val) => val >= 0, "Purchase price must be greater than or equal to 0"),
   quantity: z.number()
-    .min(1, "Quantity must be at least 1")
-    .max(1000000, "Quantity must be less than 1,000,000"),
-  stockType: z.string().min(1, "Stock type is required"),
+    .refine((val) => val >= 0, "Quantity must be greater than or equal to 0"),
 });
 
 export const StockItemUpdateSchema = z.object({
-  quantity: z.number().min(0, "Quantity must be greater than or equal to 0"),
-  lowStockThreshold: z.number().min(0, "Low stock threshold must be greater than or equal to 0"),
-  purchasePrice: z.number().min(0, "Purchase price must be greater than or equal to 0"),
+  name: z.string()
+    .refine((val) => val && val.length > 0, "Stock item name is required")
+    .optional(),
+  store: z.string().optional(),
+  lowStockThreshold: z.number()
+    .refine((val) => val >= 0, "Low stock threshold must be greater than or equal to 0")
+    .optional(),
+  purchasePrice: z.number()
+    .refine((val) => val >= 0, "Purchase price must be greater than or equal to 0")
+    .optional(),
   image: z.union([z.instanceof(File), z.string()]).optional(),
+  expirationDate: z.object({
+    month: z.number(),
+    year: z.number(),
+  }).optional(),
+  expiryDate: z.string()
+    .refine((val) => val && val.length > 0, "Expiry date is required")
+    .refine(
+      (val) => /^\d{2}\/\d{4}$/.test(val),
+      "Invalid date format. Use MM/YYYY"
+    )
+    .refine((val) => {
+      const [month, year] = val.split('/').map(Number);
+      if (month < 1 || month > 12) return false;
+      const currentDate = new Date();
+      const inputDate = new Date(year, month - 1);
+      return inputDate > currentDate;
+    }, "Invalid expiry date. Must be a future date with valid month (1-12)")
+    .optional(),
 });
 
 // Types
