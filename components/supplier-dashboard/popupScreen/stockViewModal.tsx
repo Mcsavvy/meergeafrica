@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { StockItem } from "@/lib/schemaSupplier/inventory";
-import { X } from "lucide-react";
+// import { X } from "lucide-react";
+import Image from "next/image";
 
 interface StockViewModalProps {
   isOpen: boolean;
@@ -33,7 +34,13 @@ const StockViewModal: React.FC<StockViewModalProps> = ({
     return null;
   }
 
-  const DetailRow = ({ label, value }: { label: string; value: string | number }) => (
+  const DetailRow = ({
+    label,
+    value,
+  }: {
+    label: string;
+    value: string | number;
+  }) => (
     <div className="flex justify-between items-center py-2">
       <p className="text-base font-medium text-gray-900">{label}</p>
       <p className="text-base text-gray-900">{value}</p>
@@ -42,7 +49,7 @@ const StockViewModal: React.FC<StockViewModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div 
+      <div
         className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
         onClick={onClose}
       />
@@ -52,10 +59,12 @@ const StockViewModal: React.FC<StockViewModalProps> = ({
           {/* Image */}
           <div className="flex justify-center mb-8">
             {!imageError && stockItem.image ? (
-              <img
+              <Image
                 src={stockItem.image}
                 alt={stockItem.name}
-                className="w-64 h-64 object-contain"
+                width={256}
+                height={256}
+                className="object-contain"
                 onError={() => setImageError(true)}
               />
             ) : (
@@ -67,40 +76,32 @@ const StockViewModal: React.FC<StockViewModalProps> = ({
 
           {/* Details */}
           <div className="space-y-3">
-            <DetailRow 
-              label="Item Name :" 
-              value={stockItem.name} 
+            <DetailRow label="Item Name :" value={stockItem.name} />
+            <DetailRow label="Category :" value={stockItem.category} />
+            <DetailRow label="StockType :" value={stockItem.stockType} />
+            <DetailRow
+              label="Price :"
+              value={`N${stockItem.purchasePrice.toLocaleString()}`}
             />
-            <DetailRow 
-              label="Category :" 
-              value={stockItem.category} 
+            <DetailRow label="Quantity:" value={stockItem.quantity} />
+            <DetailRow
+              label="Measuring Unit :"
+              value={stockItem.measuringUnit}
             />
-            <DetailRow 
-              label="StockType :" 
-              value={stockItem.stockType} 
+            <DetailRow
+              label="Expiry Date :"
+              value={
+                stockItem.expirationDate
+                  ? `${String(stockItem.expirationDate.month).padStart(
+                      2,
+                      "0"
+                    )}/${stockItem.expirationDate.year}`
+                  : "N/A"
+              }
             />
-            <DetailRow 
-              label="Price :" 
-              value={`N${stockItem.purchasePrice.toLocaleString()}`} 
-            />
-            <DetailRow 
-              label="Quantity:" 
-              value={stockItem.quantity} 
-            />
-            <DetailRow 
-              label="Measuring Unit :" 
-              value={stockItem.measuringUnit} 
-            />
-            <DetailRow 
-              label="Expiry Date :" 
-              value={stockItem.expirationDate 
-                ? `${String(stockItem.expirationDate.month).padStart(2, '0')}/${stockItem.expirationDate.year}`
-                : 'N/A'
-              } 
-            />
-            <DetailRow 
-              label="Low Stock Alert Unit :" 
-              value={stockItem.lowStockThreshold} 
+            <DetailRow
+              label="Low Stock Alert Unit :"
+              value={stockItem.lowStockThreshold}
             />
           </div>
 
