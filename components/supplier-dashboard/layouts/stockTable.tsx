@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import ViewStockModal from "../popupScreen/viewStock";
 import PasswordModal from "../popupScreen/passwordModal";
 import SuccessModal from "../popupScreen/successModal";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 
 interface StockTableProps {
   data: StockItem[];
@@ -248,7 +248,7 @@ export default function StockTable({
                         <div className="text-sm text-gray-900">₦{item.purchasePrice.toLocaleString()}</div>
                       </td>
                       <td className="px-4 py-4">
-                        <div className="text-sm text-gray-900">{item.quantity} {item.unit}</div>
+                        <div className="text-sm text-gray-900">{item.quantity} {item.measuringUnit}</div>
                       </td>
                       <td className="px-4 py-4">
                         <div className="text-sm text-gray-900">{item.measuringUnit}</div>
