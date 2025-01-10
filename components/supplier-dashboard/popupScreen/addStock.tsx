@@ -31,6 +31,20 @@ const predefinedCategories = [
   "Spices",
 ];
 
+const predefinedMeasuringUnits = [
+  "Kg",
+  "G",
+  "L",
+  "Ml",
+  "Oz",
+  "Lb",
+  "Cup",
+  "Tsp",
+  "Lbsp",
+  "Piece",
+  "Dozen",
+];
+
 const CreateStockModal: React.FC<CreateStockModalProps> = ({ isOpen = false, onClose }) => {
   const { createStockItem, stockItems } = useInventoryStore();
   const currentStore = useCurrentStore();
@@ -387,13 +401,26 @@ const CreateStockModal: React.FC<CreateStockModalProps> = ({ isOpen = false, onC
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-sm">Measuring Unit</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="0.00G/Kg/L"
-                          className="h-12 rounded-lg"
-                          {...field}
-                        />
-                      </FormControl>
+                
+
+
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <SelectTrigger className="h-12 rounded-lg">
+                          <SelectValue placeholder="select measuring Unit" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {predefinedMeasuringUnits.map((measuringUnit) => (
+                            <SelectItem key={measuringUnit} value={measuringUnit.toLowerCase()}>
+                              {measuringUnit}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+
+                      
                       <FormMessage />
                     </FormItem>
                   )}
