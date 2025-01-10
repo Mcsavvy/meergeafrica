@@ -178,9 +178,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-100 overflow-auto">
+    <div className="flex h-screen bg-[#F5F5F5]">
       {/* Sidebar */}
-      <div className="fixed left-0 w-[324px] h-[1044px] top-[-10px] gap-[10px] bg-[#0E2254] text-white">
+      <aside className="fixed left-0 top-0 w-[324px] h-screen bg-[#0E2254] text-white py-8 z-10">
         {/* Logo */}
         <div className="p-8 flex justify-center items-center">
           <div className="bg-white rounded-lg p-4 w-[200px]">
@@ -230,181 +230,194 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             </div>
           ))}
         </nav>
-      </div>
+      </aside>
 
       {/* Main Content */}
-      <div className="ml-[324px] min-h-screen bg-[#F5F5F5] overflow-auto">
-        {/* Top Header */}
-        <div className="h-[80px] bg-white px-8 flex items-center justify-between sticky top-0 z-10">
-          <div className="flex items-center gap-4">
-            <button className="p-2">
-              <Menu className="w-6 h-6" />
-            </button>
+      <main className="flex-1 ml-[324px]">
+        {/* Header */}
+        <header className="sticky top-0 bg-white border-b z-10">
+          <div className="flex items-center justify-between px-8 py-4">
             {pathname === `/supplier/${slug}` ? (
-              <div className="relative w-[500px]">
+              <div className="relative w-[400px]">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
                   type="text"
                   placeholder="Search here"
-                  className="w-full h-[48px] bg-[#F5F5F5] rounded-lg px-4 pr-10"
+                  className="w-full pl-10 pr-4 py-2 bg-[#F5F5F5] rounded-lg outline-none"
                 />
-                <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
               </div>
             ) : (
-              <h1 className="text-2xl font-semibold">{getCurrentPageTitle()}</h1>
+              <h1 className="text-xl font-medium">{getCurrentPageTitle()}</h1>
             )}
-          </div>
-          <div className="flex items-center gap-4">
-            <Bell className="w-6 h-6" />
-            <div className="relative" ref={profileRef}>
-              <div 
-                className="flex items-center gap-2 cursor-pointer" 
-                onClick={() => setIsProfileOpen(!isProfileOpen)}
-              >
-                <span>KaddAgro</span>
-                <div className="w-10 h-10 rounded-full bg-[#0E2254] text-white flex items-center justify-center">
-                  <User2 className="w-6 h-6" />
-                </div>
+
+            <div className="flex items-center gap-6">
+              <div className="relative">
+                <button
+                  className="w-10 h-10 bg-[#F5F5F5] rounded-full flex items-center justify-center"
+                  onClick={() => setIsProfileOpen(!isProfileOpen)}
+                >
+                  <Bell className="w-5 h-5" />
+                </button>
               </div>
 
-              {/* Profile Dropdown */}
-              {isProfileOpen && (
-                <div className="absolute right-0 mt-2 w-60 bg-white rounded-lg shadow-lg py-2 z-20">
-                  <div className="px-4 py-3 cursor-pointer hover:bg-gray-50">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
-                        <User2 className="w-5 h-5 text-gray-600" />
-                      </div>
-                      <div>
-                        <div className="font-medium">My Profile</div>
-                        <div className="text-sm text-gray-500">Personal Information</div>
-                      </div>
-                    </div>
+              <div className="relative" ref={profileRef}>
+                <button
+                  onClick={() => setIsProfileOpen(!isProfileOpen)}
+                  className="flex items-center gap-3"
+                >
+                  <div className="w-10 h-10 bg-[#F5F5F5] rounded-full flex items-center justify-center">
+                    <User2 className="w-5 h-5" />
                   </div>
-                  <div className="px-4 py-3 cursor-pointer hover:bg-gray-50">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
-                        <CreditCard className="w-5 h-5 text-gray-600" />
-                      </div>
-                      <div>
-                        <div className="font-medium">Business Profile</div>
-                        <div className="text-sm text-gray-500">Business Information</div>
-                      </div>
+                  <span>KaddAgro</span>
+                  <ChevronDown className="w-5 h-5" />
+                </button>
+                
+                {isProfileOpen && (
+                  <div className="absolute right-0 mt-2 w-60 bg-white rounded-xl shadow-lg border py-2">
+                    <div className="px-4 py-3 border-b">
+                      <div className="font-medium">My Profile</div>
+                      <div className="text-sm text-gray-500">Personal Information</div>
                     </div>
-                  </div>
-                  <div className="border-t mt-2 pt-2">
-                    <div className="px-4 py-2 text-red-500 cursor-pointer hover:bg-gray-50">
+                    <div className="px-4 py-3 border-b">
+                      <div className="font-medium">Business Profile</div>
+                      <div className="text-sm text-gray-500">Business Information</div>
+                    </div>
+                    <button className="w-full px-4 py-3 text-left text-red-600 hover:bg-gray-50">
                       SIGN OUT
-                    </div>
+                    </button>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </div>
-        </div>
+        </header>
 
         {/* Dashboard Content */}
-        <div className="p-8 pb-16">
-          {pathname === `/supplier/${slug}` ? (
-            <>
-              <h1 className="text-2xl font-semibold mb-8">Welcome, Kadd Agro,</h1>
+        <div className="h-[calc(100vh-73px)] overflow-y-auto">
+          <div className="p-8 max-w-[1600px] mx-auto">
+            {pathname === `/supplier/${slug}` ? (
+              <>
+                <h1 className="text-2xl font-medium mb-6">Welcome, Kadd Agro,</h1>
 
-              {/* Stats Grid */}
-              <div className="grid grid-cols-3 gap-6 mb-8">
-                <div className="bg-gradient-to-r from-[#0E2254] to-blue-600 rounded-lg p-6 text-white">
-                  <div className="flex justify-between items-start mb-4">
-                    <h3 className="text-lg">Total number of Orders</h3>
-                    <ArrowUpRight className="w-5 h-5" />
+                {/* Stats Grid */}
+                <div className="grid grid-cols-3 gap-8 mb-8">
+                  <div className="bg-gradient-to-r from-[#0E2254] to-blue-600 rounded-2xl p-6 text-white">
+                    <div className="flex justify-between items-start mb-4">
+                      <h3 className="text-lg">Total number of Orders</h3>
+                      <ArrowUpRight className="w-5 h-5" />
+                    </div>
+                    <p className="text-4xl font-bold mb-2">1,500</p>
+                    <span className="text-sm bg-white/20 px-2 py-1 rounded">+2.1%</span>
                   </div>
-                  <p className="text-4xl font-bold mb-2">1,500</p>
-                  <span className="text-sm bg-white/20 px-2 py-1 rounded">+2.1%</span>
-                </div>
-                <div className="bg-white rounded-lg p-6">
-                  <div className="flex justify-between items-start mb-4">
-                    <h3 className="text-lg">Confirmed Orders</h3>
-                    <ArrowUpRight className="w-5 h-5" />
+                  <div className="bg-white rounded-2xl p-6">
+                    <div className="flex justify-between items-start mb-4">
+                      <h3 className="text-lg">Confirmed Orders</h3>
+                      <ArrowUpRight className="w-5 h-5" />
+                    </div>
+                    <p className="text-4xl font-bold mb-2">1,450</p>
+                    <span className="text-sm bg-green-100 text-green-800 px-2 py-1 rounded">+1.8%</span>
                   </div>
-                  <p className="text-4xl font-bold mb-2">1,450</p>
-                  <span className="text-sm bg-green-100 text-green-800 px-2 py-1 rounded">+1.8%</span>
-                </div>
-                <div className="bg-white rounded-lg p-6">
-                  <div className="flex justify-between items-start mb-4">
-                    <h3 className="text-lg">Total Sales</h3>
-                    <ArrowUpRight className="w-5 h-5" />
+                  <div className="bg-white rounded-2xl p-6">
+                    <div className="flex justify-between items-start mb-4">
+                      <h3 className="text-lg">Total Sales</h3>
+                      <ArrowUpRight className="w-5 h-5" />
+                    </div>
+                    <p className="text-4xl font-bold mb-2">1,400</p>
+                    <span className="text-sm bg-green-100 text-green-800 px-2 py-1 rounded">+8.0%</span>
                   </div>
-                  <p className="text-4xl font-bold mb-2">1,400</p>
-                  <span className="text-sm bg-green-100 text-green-800 px-2 py-1 rounded">+8.0%</span>
                 </div>
-              </div>
 
-              {/* Sales Chart */}
-              <div className="bg-white rounded-lg p-6 mb-8">
-                <h2 className="text-xl font-semibold mb-6">Sales Statistics</h2>
-                <div className="h-[250px]">
-                  <LineChart />
+                {/* Sales Chart */}
+                <div className="bg-white rounded-2xl p-6 mb-8">
+                  <h2 className="text-xl font-medium mb-4">Sales Statistics</h2>
+                  <div className="h-[300px] overflow-hidden">
+                    <LineChart />
+                  </div>
                 </div>
-              </div>
 
-              {/* Bottom Grid */}
-              <div className="grid grid-cols-2 gap-6 mb-8">
-                <div className="bg-white rounded-lg p-6">
-                  <h2 className="text-xl font-semibold text-[#FF6B00] mb-6">My Top-selling products</h2>
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                        <Image src="/images/products/yam.jpg" alt="Yam" width={40} height={40} className="rounded" />
+                {/* Bottom Grid */}
+                <div className="grid grid-cols-2 gap-8">
+                  <div className="bg-white rounded-2xl p-6">
+                    <h2 className="text-xl font-semibold text-[#FF6B00] mb-6">My Top-selling products</h2>
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                          <Image src="/images/yam.jpg" alt="Yam" width={40} height={40} className="rounded" />
+                        </div>
+                        <span className="text-lg">Yam</span>
                       </div>
-                      <span className="text-lg">Yam</span>
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                          <Image src="/images/flour.jpg" alt="Flour" width={40} height={40} className="rounded" />
+                        </div>
+                        <span className="text-lg">Flour</span>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                          <Image src="/images/semovita.jpg" alt="Semovita" width={40} height={40} className="rounded" />
+                        </div>
+                        <span className="text-lg">Semovita</span>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                          <Image src="/images/groundnut-oil.jpg" alt="Groundnut Oil" width={40} height={40} className="rounded" />
+                        </div>
+                        <span className="text-lg">Groundnut Oil</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                        <Image src="/images/products/flour.jpg" alt="Flour" width={40} height={40} className="rounded" />
+                  </div>
+                  <div className="bg-white rounded-2xl p-6">
+                    <h2 className="text-xl font-semibold text-[#FF6B00] mb-6">Trending products in Quick-markets</h2>
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="text-center">
+                        <div className="bg-gray-100 rounded-lg mb-2 aspect-square relative">
+                          <Image 
+                            src="/images/mamagold.png" 
+                            alt="Bag of rice" 
+                            fill
+                            sizes="(max-width: 768px) 100vw, 33vw"
+                            className="rounded-lg object-contain p-2" 
+                            priority
+                          />
+                        </div>
+                        <span className="text-sm font-medium">Bag of rice</span>
                       </div>
-                      <span className="text-lg">Flour</span>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                        <Image src="/images/products/semovita.jpg" alt="Semovita" width={40} height={40} className="rounded" />
+                      <div className="text-center">
+                        <div className="bg-gray-100 rounded-lg mb-2 aspect-square relative">
+                          <Image 
+                            src="/images/spag.png" 
+                            alt="Spaghetti" 
+                            fill
+                            sizes="(max-width: 768px) 100vw, 33vw"
+                            className="rounded-lg object-contain p-2" 
+                            priority
+                          />
+                        </div>
+                        <span className="text-sm font-medium">Spaghetti</span>
                       </div>
-                      <span className="text-lg">Semovita</span>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                        <Image src="/images/products/groundnut-oil.jpg" alt="Groundnut Oil" width={40} height={40} className="rounded" />
+                      <div className="text-center">
+                        <div className="bg-gray-100 rounded-lg mb-2 aspect-square relative">
+                          <Image 
+                            src="/images/peak.png" 
+                            alt="Peak Milk" 
+                            fill
+                            sizes="(max-width: 768px) 100vw, 33vw"
+                            className="rounded-lg object-contain p-2" 
+                            priority
+                          />
+                        </div>
+                        <span className="text-sm font-medium">Peak Milk</span>
                       </div>
-                      <span className="text-lg">Groundnut Oil</span>
                     </div>
                   </div>
                 </div>
-                <div className="bg-white rounded-lg p-6">
-                  <h2 className="text-xl font-semibold text-[#FF6B00] mb-6">Trending products in Quick-markets</h2>
-                  <div className="grid grid-cols-3 gap-4">
-                    <div className="text-center">
-                      <div className="bg-gray-100 rounded-lg p-4 mb-2 aspect-square flex items-center justify-center">
-                        <Image src="/images/products/rice.jpg" alt="Bag of rice" width={120} height={120} className="rounded" />
-                      </div>
-                      <span className="text-sm">Bag of rice</span>
-                    </div>
-                    <div className="text-center">
-                      <div className="bg-gray-100 rounded-lg p-4 mb-2 aspect-square flex items-center justify-center">
-                        <Image src="/images/products/spaghetti.jpg" alt="Spaghetti" width={120} height={120} className="rounded" />
-                      </div>
-                      <span className="text-sm">Spaghetti</span>
-                    </div>
-                    <div className="text-center">
-                      <div className="bg-gray-100 rounded-lg p-4 mb-2 aspect-square flex items-center justify-center">
-                        <Image src="/images/products/milk.jpg" alt="Milk" width={120} height={120} className="rounded" />
-                      </div>
-                      <span className="text-sm">Milk</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </>
-          ) : (
-            children
-          )}
+              </>
+            ) : (
+              children
+            )}
+          </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 };
