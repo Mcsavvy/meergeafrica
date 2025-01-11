@@ -5,9 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { ChevronRight } from "lucide-react";
 import ChangePasswordModal from "./components/password-change-modal";
+import DeactivateAccountModal from "./components/deactivate-account-modal";
+import CustomLinkModal from "./components/custom-link-modal";
 
 const AccountSecurityPage = () => {
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState(false);
+  const [isCustomLinkModalOpen, setIsCustomLinkModalOpen] = useState(false);
 
   return (
     <div className="space-y-6 bg-white rounded py-6 px-6 h-full">
@@ -29,7 +33,11 @@ const AccountSecurityPage = () => {
                 customers
               </p>
             </div>
-            <Button variant="ghost" className="text-secondary">
+            <Button
+              variant="ghost"
+              className="text-secondary"
+              onClick={() => setIsCustomLinkModalOpen(true)}
+            >
               Edit
               <ChevronRight className="w-4 h-4 ml-1" />
             </Button>
@@ -79,7 +87,11 @@ const AccountSecurityPage = () => {
                 reactivated when you sign in again
               </p>
             </div>
-            <Button variant="ghost" className="text-secondary">
+            <Button
+              variant="ghost"
+              className="text-secondary"
+              onClick={() => setIsDeactivateModalOpen(true)}
+            >
               Deactivate Account
               <ChevronRight className="w-4 h-4 ml-1" />
             </Button>
@@ -89,6 +101,15 @@ const AccountSecurityPage = () => {
       <ChangePasswordModal
         isOpen={isPasswordModalOpen}
         onClose={() => setIsPasswordModalOpen(false)}
+      />
+      <DeactivateAccountModal
+        isOpen={isDeactivateModalOpen}
+        onClose={() => setIsDeactivateModalOpen(false)}
+        onDeactivate={() => {}}
+      />
+      <CustomLinkModal
+        isOpen={isCustomLinkModalOpen}
+        onClose={() => setIsCustomLinkModalOpen(false)}
       />
     </div>
   );
