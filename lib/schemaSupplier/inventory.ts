@@ -4,6 +4,7 @@ import z from "zod";
 export const StoreSchema = z.object({
   id: z.string(),
   name: z.string(),
+  location: z.string(),
   businessSectionName: z.string().optional(),
   description: z.string(),
   image: z.instanceof(File).optional(),
@@ -11,6 +12,7 @@ export const StoreSchema = z.object({
 
 export const StoreCreateSchema = z.object({
   name: z.string(),
+  location: z.string(),
   businessSectionName: z.string().optional(),
   description: z.string(),
   image: z.instanceof(File).optional(),
@@ -121,16 +123,10 @@ export const StockItemUpdateSchema = z.object({
 });
 
 // Types
-export type Store = Omit<z.infer<typeof StoreSchema>, "image"> & {
-  image?: string;
-};
-
+export type Store = z.infer<typeof StoreSchema>;
 export type StoreCreate = z.infer<typeof StoreCreateSchema>;
-
 export type StockItem = Omit<z.infer<typeof StockItemSchema>, "image"> & {
   image?: string;
 };
-
 export type StockItemCreate = z.infer<typeof StockItemCreateSchema>;
-
 export type StockItemUpdate = z.infer<typeof StockItemUpdateSchema>;

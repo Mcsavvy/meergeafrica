@@ -134,7 +134,10 @@ const StockScreen = () => {
 
       <StockTable
         data={filteredStockItems}
-        stores={stores}
+        stores={stores.map(store => ({
+          ...store,
+          image: store.image ? URL.createObjectURL(store.image) : undefined
+        }))}
         showSelection={true}
         selectedItems={selectedStockItems}
         onItemSelect={handleStockSelect}
