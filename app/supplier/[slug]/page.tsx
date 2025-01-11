@@ -1,8 +1,8 @@
 import { Card } from "@/components/ui/card";
 import { StatsCard } from "@/components/supplier-dashboard/stats-card";
 import { SalesChart } from "@/components/supplier-dashboard/sales-chart";
-import { TopSellingProducts } from "@/components/supplier-dashboard/top-selling-products";
-import { TrendingProducts } from "@/components/supplier-dashboard/trending-products";
+import { MyTopSelling } from "@/components/supplier-dashboard/my-top-selling";
+import { TrendingQuickMarkets } from "@/components/supplier-dashboard/trending-quick-markets";
 import { OrderList } from "@/components/supplier-dashboard/order-list";
 
 export default function DashboardPage() {
@@ -30,8 +30,8 @@ export default function DashboardPage() {
 
       {/* Products Grid */}
       <div className="grid grid-cols-2 gap-4">
-        <TopSellingProducts />
-        <TrendingProducts />
+        <MyTopSelling />
+        <TrendingQuickMarkets />
       </div>
 
       {/* Order List */}
