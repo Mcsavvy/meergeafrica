@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { useInventoryStore } from "@/lib/contexts/supplier/inventory-context";
 import { Card } from "@/components/ui/card";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import StockTable from "@/components/supplier-dashboard/layouts/stockTable";
 import { StockItem, Store } from "@/lib/schemaSupplier/inventory";
 import CreateStockModal from "@/components/supplier-dashboard/popupScreen/addStock";
@@ -26,6 +26,7 @@ const StockScreen = () => {
   const [selectedStockItems, setSelectedStockItems] = useState<string[]>([]);
   const { stores, stockItems, deactivateStockItem } = useInventoryStore();
   const { slug } = useParams();
+  const searchParams = useSearchParams();
   const [selectedStoreId, setSelectedStoreId] = useState<string>("");
   const isAllStockPage = slug === "all-stocks";
 
@@ -35,7 +36,13 @@ const StockScreen = () => {
     if (stores.length > 0 && !isAllStockPage) {
       setSelectedStoreId(stores[0].id);
     }
-  }, [stores, isAllStockPage]);
+
+    // Check if we should open the add stock modal
+    const shouldOpenModal = searchParams.get("addStock") === "true";
+    if (shouldOpenModal) {
+      setIsModalOpen(true);
+    }
+  }, [stores, isAllStockPage, searchParams]);
 
   const handleStockSelect = (id: string) => {
     setSelectedStockItems((prevSelected) => {
