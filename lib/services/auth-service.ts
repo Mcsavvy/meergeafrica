@@ -15,3 +15,25 @@ export async function signupRestaurant(
     },
   };
 }
+
+export async function verifyPassword(
+  password: string
+): Promise<{ success: boolean }> {
+  console.log("Verifying password", password);
+  const acceptedPasswords = [
+    "password",
+    "password123",
+    "123456",
+    "password1234",
+  ];
+  const promise = new Promise<{ success: boolean }>((resolve) => {
+    setTimeout(() => {
+      if (acceptedPasswords.includes(password)) {
+        resolve({ success: true });
+      } else {
+        resolve({ success: false });
+      }
+    }, 3000);
+  });
+  return promise;
+}
