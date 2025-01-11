@@ -1,11 +1,14 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { ChevronRight } from "lucide-react";
+import ChangePasswordModal from "./components/password-change-modal";
 
 const AccountSecurityPage = () => {
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+
   return (
     <div className="space-y-6 bg-white rounded py-6 px-6 h-full">
       <div>
@@ -42,7 +45,11 @@ const AccountSecurityPage = () => {
                 Set a unique password to protect your account
               </p>
             </div>
-            <Button variant="ghost" className="text-secondary">
+            <Button
+              variant="ghost"
+              className="text-secondary"
+              onClick={() => setIsPasswordModalOpen(true)}
+            >
               Change Password
               <ChevronRight className="w-4 h-4 ml-1" />
             </Button>
@@ -79,6 +86,10 @@ const AccountSecurityPage = () => {
           </div>
         </div>
       </div>
+      <ChangePasswordModal
+        isOpen={isPasswordModalOpen}
+        onClose={() => setIsPasswordModalOpen(false)}
+      />
     </div>
   );
 };
