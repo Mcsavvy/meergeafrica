@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import React from "react";
 import Image from "next/image";
-import { convertToBase64 } from "@/lib/utils";
 
 const StockItemImage = ({ src, alt }: { src: string; alt: string }) => (
   <div className="w-12 h-12 rounded-full overflow-hidden">
@@ -77,14 +76,9 @@ export const stockColumns: ColumnDef<StockItem>[] = [
     accessorKey: "image",
     header: "",
     cell: async ({ row }) => {
-      const image = row.original.image;
-      if (!image) return null;
-      
-      const src = image instanceof File 
-        ? await convertToBase64(image)
-        : image;
-        
-      return <StockItemImage src={src} alt={row.original.name} />;
+      return (
+        <StockItemImage src={row.original.image!} alt={row.original.name} />
+      );
     },
     size: 50,
   },
