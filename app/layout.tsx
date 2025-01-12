@@ -1,19 +1,22 @@
-import type { Metadata } from "next";
-import "./globals.css";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Meerge Africa",
-  description: "simplifying food business operations across Africa",
-};
+import "./globals.css";
+import { Inter } from "next/font/google";
+import { Toaster } from "sonner";
+
+const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
-      <body className="antialiased">{children}</body>
+      <body className={inter.className}>
+        {children}
+        <Toaster richColors position="top-right" />
+      </body>
     </html>
   );
 }

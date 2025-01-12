@@ -9,7 +9,6 @@
     "skipLibCheck": true,
     "strict": true,
     "noEmit": true,
-    "target": "es2015",
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "bundler",
@@ -26,7 +25,8 @@
       "@/*": [
         "./*"
       ]
-    }
+    },
+    "target": "ES2017"
   },
   "include": [
     "next-env.d.ts",
