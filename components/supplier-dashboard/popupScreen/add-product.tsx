@@ -118,9 +118,13 @@
 //   const handleChange = (
 //     event: ChangeEvent<HTMLInputElement | HTMLSelectElement>
 //   ) => {
-//     const { name, value, files } = event.target;
-//     if (files) {
-//       setNewProduct({ ...newProduct, [name]: files[0] });
+//     const { name, value } = event.target;
+    
+//     if (event.target instanceof HTMLInputElement && event.target.type === 'file') {
+//       const files = event.target.files;
+//       if (files) {
+//         setNewProduct({ ...newProduct, [name]: files[0] });
+//       }
 //     } else {
 //       setNewProduct({ ...newProduct, [name]: value });
 //     }
@@ -131,8 +135,17 @@
 //       onAdd({ ...newProduct, id: Date.now() } as Product);
 //       setNewProduct({
 //         name: "",
+//         image: null,
+//         manufacturer: "",
 //         price: "",
-//         category: "",
+//         unitsAvailable: "",
+//         size: "",
+//         weight: "",
+//         expiryDate: "",
+//         description: "",
+//         availability: "",
+//         deliveryTime: "",
+//         pickupOption: ""
 //       });
 //       setErrors({});
 //       setOpen(false);
