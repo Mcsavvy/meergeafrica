@@ -24,6 +24,7 @@ const ChangePasswordModal = ({ isOpen, onClose }: ChangePasswordModalProps) => {
   const [passwordConfirmed, setPasswordConfirmed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const form = useZodForm({ schema: changePasswordSchema });
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [error, setError] = useState("");
 
   const verifyCurrentPassword = useDebouncedCallback(

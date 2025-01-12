@@ -26,7 +26,9 @@ const CartPage = () => {
   const { cart, products, removeFromCart, updateCartQuantity } = useMarket();
   const [promoCode, setPromoCode] = useState("");
   const [deliveryOption, setDeliveryOption] = useState("pickup");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [selectedLocation, setSelectedLocation] = useState("");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [selectedBranch, setSelectedBranch] = useState("");
   const { slug } = useContext(RestaurantContext);
 
