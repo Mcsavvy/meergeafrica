@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Store, Search } from "lucide-react";
+import { Store } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -17,8 +17,6 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogFooter,
   DialogTrigger,
 } from "@/components/ui/dialog";
@@ -35,17 +33,12 @@ type Product = {
 
 export default function Products() {
   const [products, setProducts] = useState<Product[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [newProduct, setNewProduct] = useState<Omit<Product, "id">>({
     name: "",
     price: "",
     category: "",
   });
-
-  const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   const handleAddProduct = (productData: Product) => {
     setProducts([...products, { ...productData, id: Date.now() }]);
@@ -124,7 +117,6 @@ export default function Products() {
               }
             />
           </Dialog>
-          <Search className="h-4 w-4 text-gray-500" />
         </div>
       </div>
 
@@ -139,7 +131,7 @@ export default function Products() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {filteredProducts.map((product) => (
+          {products.map((product) => (
             <TableRow key={product.id}>
               <TableCell
                 onClick={() => handleProductClick(product)}

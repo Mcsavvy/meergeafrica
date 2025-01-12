@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, usePathname } from "next/navigation";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import Image from 'next/image';
 import {
   ChevronDown,
@@ -12,20 +12,24 @@ import {
   Store,
   Settings,
   LogOut,
-  Menu,
-  Search,
-  Bell,
-  User2,
   ArrowUpRight,
 } from "lucide-react";
 import NavBar from "./navBar";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import { LineChart } from "@/components/charts/LineChart";
 import { MyTopSelling } from "@/components/supplier-dashboard/my-top-selling";
 import { TrendingQuickMarkets } from "@/components/supplier-dashboard/trending-quick-markets";
 import { SignOutModal } from "../popupScreen/sign-out-modal";
+
+interface SidebarItem {
+  label: string;
+  icon?: React.ReactNode;
+  href?: string;
+  children?: {
+    label: string;
+    href: string;
+  }[];
+}
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -35,10 +39,8 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const pathname = usePathname();
   const router = useRouter();
   const [openDropdowns, setOpenDropdowns] = useState<{ [key: string]: boolean }>({});
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isSignOutModalOpen, setIsSignOutModalOpen] = useState(false);
-  const profileRef = useRef<HTMLDivElement>(null);
 
   // Extract the slug from the pathname
   const slug = pathname.split('/')[2] || '';
@@ -54,13 +56,15 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     return currentItem?.label || 'Dashboard';
   };
 
-  const handleItemClick = (item: any) => {
+  const handleItemClick = (item: SidebarItem) => {
     if (item.label === "Sign out") {
       setIsSignOutModalOpen(true);
     } else if (item.children) {
       toggleDropdown(item.label);
-      router.push(item.href);
-    } else {
+      if (item.href) {
+        router.push(item.href);
+      }
+    } else if (item.href) {
       router.push(item.href);
     }
   };
@@ -75,18 +79,6 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
-
-  // Close profile dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
-        setIsProfileOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
   // Add window resize handler
   useEffect(() => {
@@ -106,7 +98,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const sidebarItems = [
+  const sidebarItems: SidebarItem[] = [
     {
       icon: <LayoutDashboard className="w-5 h-5" />,
       label: "Dashboard",

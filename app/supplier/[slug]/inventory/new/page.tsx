@@ -1,14 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useInventoryStore } from "@/lib/contexts/supplier/inventory-context";
-import { Card } from "@/components/ui/card";
-import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import StockTable from "@/components/supplier-dashboard/layouts/stockTable";
-import { StockItem, Store } from "@/lib/schemaSupplier/inventory";
+import { StockItem } from "@/lib/schemaSupplier/inventory";
 import CreateStockModal from "@/components/supplier-dashboard/popupScreen/addStock";
 import {
   Select,
@@ -18,23 +15,30 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { CurrentStoreProvider } from "@/lib/contexts/supplier/inventory-context";
+import { toast } from "sonner";
+import SuccessModal from "@/components/supplier-dashboard/popupScreen/successModal";
+import InventoryActions from "@/components/supplier-dashboard/layouts/inventory-actions";
 
 const StockScreen = () => {
   const [mounted, setMounted] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStockItems, setSelectedStockItems] = useState<string[]>([]);
+  const [selectedStoreId, setSelectedStoreId] = useState<string>("");
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [filteredStockItems, setFilteredStockItems] = useState([]);
+
   const { stores, stockItems, deactivateStockItem } = useInventoryStore();
   const { slug } = useParams();
   const searchParams = useSearchParams();
-  const [selectedStoreId, setSelectedStoreId] = useState<string>("");
   const isAllStockPage = slug === "all-stocks";
 
   useEffect(() => {
     setMounted(true);
-    // Only set default store if not on all-stock page
-    if (stores.length > 0 && !isAllStockPage) {
-      setSelectedStoreId(stores[0].id);
+    // Set default store to Kadd Store
+    if (stores.length > 0) {
+      const defaultStore = stores.find(store => store.id === "default") || stores[0];
+      setSelectedStoreId(defaultStore.id);
     }
 
     // Check if we should open the add stock modal
@@ -42,7 +46,7 @@ const StockScreen = () => {
     if (shouldOpenModal) {
       setIsModalOpen(true);
     }
-  }, [stores, isAllStockPage, searchParams]);
+  }, [stores, searchParams]);
 
   const handleStockSelect = (id: string) => {
     setSelectedStockItems((prevSelected) => {
@@ -57,52 +61,48 @@ const StockScreen = () => {
   const handleDeactivateStock = async (stock: StockItem) => {
     try {
       await deactivateStockItem(stock.id, '123456');
+      setShowSuccessModal(true);
+      setTimeout(() => {
+        setShowSuccessModal(false);
+      }, 2000);
     } catch (error) {
       console.error('Failed to deactivate stock:', error);
+      toast.error('Failed to deactivate stock item');
     }
   };
 
   // Filter stock items by store and search query
-  const filteredStockItems = stockItems.filter(item => {
-    const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStore = isAllStockPage ? true : (selectedStoreId ? item.store === selectedStoreId : true);
-    const isActive = item.isActive !== false; // Only show active items
-    return matchesSearch && matchesStore && isActive;
-  });
+  useEffect(() => {
+    const filtered = stockItems.filter(item => {
+      if (!selectedStoreId && !isAllStockPage) return false;
+      const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesStore = isAllStockPage || item.store === selectedStoreId;
+      const isActive = item.isActive !== false;
+      return matchesSearch && matchesStore && isActive;
+    });
+    setFilteredStockItems(filtered);
+  }, [stockItems, selectedStoreId, searchQuery, isAllStockPage]);
 
-  if (!mounted) {
-    return null;
-  }
+  if (!mounted) return null;
 
   return (
-    <div className="p-8">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-2xl font-semibold">Kadd Stores</h1>
-        <div className="flex items-center gap-4">
-          <Button 
-            onClick={() => setIsModalOpen(true)}
-            disabled={!selectedStoreId}
-            className="bg-[#0A1F5C] text-white hover:bg-[#0A1F5C]/90"
-          >
-            Add stock
-          </Button>
-          <Link href="stores">
-            <Button variant="outline" className="flex items-center gap-2">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M13 12H3M3 12L6 9M3 12L6 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M9 17V18C9 19.6569 10.3431 21 12 21H18C19.6569 21 21 19.6569 21 18V6C21 4.34315 19.6569 3 18 3H12C10.3431 3 9 4.34315 9 6V7" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-              </svg>
-              Stores
-            </Button>
-          </Link>
-          <Button variant="outline" className="p-2">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M3 6H21M3 12H21M3 18H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </Button>
+    <div className="h-full flex-1 flex-col space-y-8 p-8 flex">
+      <div className="flex items-center justify-between space-y-2">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight">Inventory</h2>
+          <p className="text-muted-foreground">
+            Here&apos;s a list of all your inventory items
+          </p>
         </div>
       </div>
 
+      <InventoryActions onAddStock={() => setIsModalOpen(true)} />
+
+      {selectedStoreId && (
+        <CurrentStoreProvider storeId={selectedStoreId}>
+          <CreateStockModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+        </CurrentStoreProvider>
+      )}
       <div className="mb-6">
         <div className="flex items-center space-x-4">
           {!isAllStockPage && (
@@ -136,7 +136,11 @@ const StockScreen = () => {
         data={filteredStockItems}
         stores={stores.map(store => ({
           ...store,
-          image: store.image ? URL.createObjectURL(store.image) : undefined
+          image: store.image 
+            ? store.image instanceof File 
+              ? URL.createObjectURL(store.image)
+              : store.image
+            : undefined
         }))}
         showSelection={true}
         selectedItems={selectedStockItems}
@@ -144,14 +148,10 @@ const StockScreen = () => {
         onDeactivateStock={handleDeactivateStock}
       />
 
-      {isModalOpen && (isAllStockPage || selectedStoreId) && (
-        <CurrentStoreProvider storeId={selectedStoreId || stores[0]?.id}>
-          <CreateStockModal
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
-          />
-        </CurrentStoreProvider>
-      )}
+      <SuccessModal
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+      />
     </div>
   );
 };

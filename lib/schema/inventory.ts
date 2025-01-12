@@ -5,6 +5,7 @@ export const StoreSchema = z.object({
   name: z.string(),
   businessSectionName: z.string().optional(),
   description: z.string(),
+  location: z.string(),
   image: z.instanceof(File).optional(),
 });
 
@@ -12,6 +13,7 @@ export const StoreCreateSchema = z.object({
   name: z.string(),
   businessSectionName: z.string().optional(),
   description: z.string(),
+  location: z.string(),
   image: z.instanceof(File).optional(),
 });
 
@@ -24,7 +26,7 @@ export const StockItemSchema = z.object({
   id: z.string(),
   name: z.string(),
   store: z.string(),
-  image: z.instanceof(File).optional(),
+  image: z.union([z.instanceof(File), z.string()]).optional(),
   expirationDate: z.object({
     month: z.number(),
     year: z.number(),
@@ -34,6 +36,11 @@ export const StockItemSchema = z.object({
   category: z.string(),
   purchasePrice: z.number(),
   quantity: z.number(),
+  createdAt: z.string(),
+  isActive: z.boolean(),
+  deactivatedAt: z.string().optional(),
+  lastKnownQuantity: z.number().optional(),
+  deactivationReason: z.string().optional(),
 });
 
 export const StockItemCreateSchema = z.object({
@@ -51,10 +58,16 @@ export const StockItemCreateSchema = z.object({
   quantity: z.number(),
 });
 
-export type StockItem = Omit<z.infer<typeof StockItemSchema>, "image"> & {
-  image?: string;
-};
 export type StockItemCreate = z.infer<typeof StockItemCreateSchema>;
+
+export type StockItem = z.infer<typeof StockItemSchema>;
+
+// Helper type to ensure type safety when creating a new StockItem
+export type StockItemWithMetadata = {
+  createdAt: string;
+  isActive: boolean;
+  id: string;
+};
 
 export const StockItemUpdateSchema = z.object({
   quantity: z.number().min(0, "Quantity must be greater than or equal to 0"),
