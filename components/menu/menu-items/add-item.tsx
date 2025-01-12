@@ -22,7 +22,6 @@ import {
 import DurationInput from "@/components/ui/duration";
 import { useMenuItemsStore } from "@/lib/contexts/menu-items-context";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { AddOn, PairedItem } from "@/types/menu";
 
 const sizeUnits = [
   {
@@ -168,22 +167,10 @@ const CreateMenuItemForm = ({
   );
 
   const setImage = useCallback(
-    (v: File) => {
-      form.setValue("image", v);
-    },
-    [form]
-  );
-
-  const setAddons = useCallback(
-    (v: AddOn["id"][]) => {
-      form.setValue("addOns", v);
-    },
-    [form]
-  );
-
-  const setPairedItems = useCallback(
-    (v: PairedItem["id"][]) => {
-      form.setValue("pairedItems", v);
+    (v?: File) => {
+      if (v) {
+        form.setValue("image", v);
+      }
     },
     [form]
   );
@@ -368,11 +355,11 @@ const CreateMenuItemForm = ({
         <FormField
           control={form.control}
           name="addOns"
-          render={() => (
+          render={({ field }) => (
             <FormItem className="space-y-2">
               <FormLabel className="required">Add-Ons</FormLabel>
               <FormControl>
-                <SelectAddons onChange={setAddons} />
+                <SelectAddons {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -381,11 +368,11 @@ const CreateMenuItemForm = ({
         <FormField
           control={form.control}
           name="pairedItems"
-          render={() => (
+          render={({ field }) => (
             <FormItem className="space-y-2">
               <FormLabel className="required">Best Paired With</FormLabel>
               <FormControl>
-                <SelectPairedItems onChange={setPairedItems} />
+                <SelectPairedItems {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

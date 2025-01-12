@@ -1,0 +1,64 @@
+on:
+  workflow_dispatch:
+  push:    
+    branches:
+      - main
+
+name: 🚀 Deploy Cook
+
+jobs:
+  build-deploy:
+    if: "!contains(github.event.head_commit.message, 'ci skip')"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      
+      - name: Use Node.js version from package.json
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: 'package.json'
+      
+      - name: Npm install
+        run: npm install
+      
+      - name: Build
+        run: npm run build
+      
+      - name: Deploy to Netlify
+        uses: netlify/actions/cli@master
+        with:
+          # args: deploy --prod --dir=.next
+          args: deploy --dir=site
+        env:
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_TEST_SITE_ID }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+
+
+  # cpanel-deploy:
+  #   name: 🎉 Deploy
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - name: 🚚 Get latest code
+  #     uses: actions/checkout@v4
+      
+  #   - name: Use Node.js 18
+  #     uses: actions/setup-node@v2
+  #     with:
+  #       node-version: '18'
+      
+  #   - name: 🔨 Build Project
+  #     run: |
+  #       npm install
+  #       npm run build
+    
+  #   - name: List output files
+  #     run: pwd && ls -al
+  #     # run: find build/ -print
+    
+  #   - name: 📂 Sync files
+  #     uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+  #     with:        
+  #       server: ftp.meergeafrica.com
+  #       username: osher@food.meergeafrica.com
+  #       password: ${{ secrets.pass }}
+  #       # local-dir: build/

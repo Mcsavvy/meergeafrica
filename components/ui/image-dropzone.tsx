@@ -3,13 +3,14 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { X } from "lucide-react";
 import Image from "next/image";
+import { convertToBase64 } from "@/lib/utils";
 
 type ImageDropzoneProps = {
   id?: string;
   name: string;
   required?: boolean;
-  value?: File;
-  onChange?: (file: File) => void;
+  value?: File | string;
+  onChange?: (file?: File) => void;
 };
 
 const ImageDropzone = ({
@@ -25,11 +26,9 @@ const ImageDropzone = ({
     (acceptedFiles: File[]) => {
       const file = acceptedFiles[0];
       if (file) {
-        const reader = new FileReader();
-        reader.onload = () => {
-          setPreview(reader.result as string);
-        };
-        reader.readAsDataURL(file);
+        convertToBase64(file).then((image) => {
+          setPreview(image);
+        });
       }
       onChange?.(file);
     },
@@ -49,16 +48,16 @@ const ImageDropzone = ({
   };
 
   useEffect(() => {
+    console.log(`[ImageDropzone] value:`, value);
     if (typeof value === "string") {
       setPreview(value);
+      onChange?.(undefined);
     } else if (value) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setPreview(reader.result as string);
-      };
-      reader.readAsDataURL(value);
+      convertToBase64(value).then((image) => {
+        setPreview(image);
+      });
     }
-  }, [value]);
+  }, [value, onChange]);
 
   if (preview) {
     return (

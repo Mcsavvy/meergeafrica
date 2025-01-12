@@ -1,17 +1,16 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import AsyncCreatableSelect from "react-select/async-creatable";
 import { Pencil, Trash2 } from "lucide-react";
 import { AddOn } from "@/types/menu";
 import Image from "next/image";
 import { useAddOnStore } from "@/lib/contexts/addon-context";
 import {
-  AddOnUpdatedEvent,
   emitAddOnCreate,
   emitAddOnSelected,
   emitAddOnUpdate,
   onAddOnSelected,
-  onAddOnUpdated,
 } from "@/lib/events/addon-events";
+import { useAddOns } from "@/lib/hooks/menu";
 
 interface AddOnOption {
   value: string;
@@ -127,46 +126,29 @@ const SelectedAddOn = ({
   );
 };
 
-const SelectAddons = ({
-  onChange,
-}: {
-  onChange: (addOns: AddOn["id"][]) => void;
-}) => {
-  const [selectedAddOns, setSelectedAddOns] = useState<AddOn[]>([]);
+const SelectAddons = React.forwardRef<
+  HTMLElement,
+  {
+    value?: AddOn["id"][];
+    onChange: (value: AddOn["id"][]) => void;
+  }
+>(({ value = [], onChange }) => {
+  const addOns = useAddOns(value);
 
   const handleAddOnRemove = (addOnId: string) => {
-    setSelectedAddOns(selectedAddOns.filter((addOn) => addOn.id !== addOnId));
-  };
-  const handleAddOnUpdated = (e: AddOnUpdatedEvent) => {
-    setSelectedAddOns((selectedAddOns) =>
-      selectedAddOns.map((addOn) =>
-        addOn.id === e.detail.addOn.id ? e.detail.addOn : addOn
-      )
-    );
+    onChange(addOns.filter((a) => a.id !== addOnId).map((a) => a.id));
   };
 
   useEffect(() => {
     return onAddOnSelected((e) => {
-      setSelectedAddOns((selectedAddOns) => [
-        ...selectedAddOns,
-        e.detail.addOn,
-      ]);
+      onChange([...addOns.map((a) => a.id), e.detail.addOn.id]);
     });
-  }, [setSelectedAddOns]);
-
-  useEffect(() => {
-    return onAddOnUpdated(handleAddOnUpdated);
-  }, []);
-
-  useEffect(() => {
-    onChange(selectedAddOns.map((a) => a.id));
-  }, [selectedAddOns, onChange]);
-
+  }, [onChange, addOns]);
   return (
     <>
-      <AddOnSelector selectedAddOns={selectedAddOns} />
+      <AddOnSelector selectedAddOns={addOns} />
       <div className="flex items-center flex-wrap gap-2">
-        {selectedAddOns.map((addOn) => (
+        {addOns.map((addOn) => (
           <SelectedAddOn
             addOn={addOn}
             key={addOn.id}
@@ -176,6 +158,8 @@ const SelectAddons = ({
       </div>
     </>
   );
-};
+});
+
+SelectAddons.displayName = "SelectAddons";
 
 export default SelectAddons;

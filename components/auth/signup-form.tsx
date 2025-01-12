@@ -15,6 +15,7 @@ import { PhoneInput } from "@/components/ui/phone";
 import { PasswordInput } from "@/components/ui/password";
 import { signupRestaurant } from "@/lib/services/auth-service";
 import { Checkbox } from "../ui/checkbox";
+import Link from "next/link";
 
 export function RestaurantSignupForm() {
   const form = useZodForm({
@@ -117,8 +118,8 @@ export function RestaurantSignupForm() {
             </a>
           </FormLabel>
         </FormItem>
-        <Button type="submit" className="w-full">
-          Create Account
+        <Button type="submit" className="w-full" asChild>
+          <Link href="/restaurant/email-verification">Create Account</Link>
         </Button>
       </form>
     </Form>
