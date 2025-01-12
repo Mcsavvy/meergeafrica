@@ -12,7 +12,6 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useInventoryStore } from "@/lib/contexts/supplier/inventory-context";
-import Image from "next/image";
 
 interface CreateStoreModalProps {
   isOpen: boolean;

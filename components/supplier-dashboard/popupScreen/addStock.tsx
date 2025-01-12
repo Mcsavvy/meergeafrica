@@ -1,7 +1,7 @@
 "use client";
 
 import z from "zod";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useInventoryStore } from "@/lib/contexts/supplier/inventory-context";
 import { useCurrentStore } from "@/lib/contexts/supplier/inventory-context";
 import { StockItemCreateSchema } from "@/lib/schemaSupplier/inventory";
@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { X, ChevronDown, Camera } from "lucide-react";
+import { X, ChevronDown } from "lucide-react";
 import Image from "next/image";
 
 interface CreateStockModalProps {
@@ -46,7 +46,7 @@ const predefinedMeasuringUnits = [
 ];
 
 const CreateStockModal: React.FC<CreateStockModalProps> = ({ isOpen = false, onClose }) => {
-  const { createStockItem, stockItems } = useInventoryStore();
+  const { createStockItem } = useInventoryStore();
   const currentStore = useCurrentStore();
   const [showImageOptions, setShowImageOptions] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -55,9 +55,21 @@ const CreateStockModal: React.FC<CreateStockModalProps> = ({ isOpen = false, onC
   const form = useZodForm({
     schema: StockItemCreateSchema,
     defaultValues: {
-      store: currentStore?.id,
+      name: "",
+      store: currentStore.id,
+      expiryDate: "",
+      measuringUnit: "",
+      lowStockThreshold: 0,
+      category: "",
+      purchasePrice: 0,
+      quantity: 0,
+      stockType: "",
     },
   });
+
+  useEffect(() => {
+    form.setValue("store", currentStore.id);
+  }, [currentStore, form]);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     try {
@@ -80,41 +92,6 @@ const CreateStockModal: React.FC<CreateStockModalProps> = ({ isOpen = false, onC
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to upload image");
       form.setValue("image", undefined);
-    }
-  };
-
-  const handleCameraCapture = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      const video = document.createElement("video");
-      video.srcObject = stream;
-      await video.play();
-
-      const canvas = document.createElement("canvas");
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      const context = canvas.getContext("2d");
-      
-      if (!context) {
-        throw new Error("Failed to get canvas context");
-      }
-      
-      context.drawImage(video, 0, 0);
-
-      const blob = await new Promise<Blob>((resolve, reject) => {
-        canvas.toBlob((blob) => {
-          if (blob) resolve(blob);
-          else reject(new Error("Failed to capture image"));
-        }, "image/jpeg", 0.8);
-      });
-
-      const file = new File([blob], "camera-capture.jpg", { type: "image/jpeg" });
-      form.setValue("image", file);
-      setError(null);
-
-      stream.getTracks().forEach((track) => track.stop());
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to access camera");
     }
   };
 
@@ -181,7 +158,7 @@ const CreateStockModal: React.FC<CreateStockModalProps> = ({ isOpen = false, onC
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[600px] p-6">
         <DialogHeader className="flex flex-row items-center justify-between p-0 mb-6">
-          <DialogTitle className="text-xl">Add Stock Item</DialogTitle>
+          <DialogTitle className="text-xl">Add New Stock Item to {currentStore.name}</DialogTitle>
           <Button 
             variant="ghost" 
             size="icon" 
@@ -258,14 +235,6 @@ const CreateStockModal: React.FC<CreateStockModalProps> = ({ isOpen = false, onC
                                   className="hidden"
                                 />
                               </label>
-                              <button
-                                type="button"
-                                onClick={handleCameraCapture}
-                                className="w-full flex items-center gap-2 p-2 hover:bg-gray-50 rounded"
-                              >
-                                <Camera className="w-5 h-5" />
-                                <span>Take Photo</span>
-                              </button>
                             </div>
                           </div>
                         )}
@@ -401,9 +370,6 @@ const CreateStockModal: React.FC<CreateStockModalProps> = ({ isOpen = false, onC
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-sm">Measuring Unit</FormLabel>
-                
-
-
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
@@ -419,8 +385,6 @@ const CreateStockModal: React.FC<CreateStockModalProps> = ({ isOpen = false, onC
                           ))}
                         </SelectContent>
                       </Select>
-
-                      
                       <FormMessage />
                     </FormItem>
                   )}

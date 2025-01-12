@@ -1,14 +1,13 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
-import { StockItem } from "@/lib/schemaSupplier/inventory";
-import { Store } from "@/lib/contexts/supplier/storeContext";
+import React, { useState, useEffect, useRef, useMemo } from "react";
+import { StockItem, Store } from "@/lib/schemaSupplier/inventory";
 import { MoreVertical, Eye, PowerOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ViewStockModal from "../popupScreen/viewStock";
 import PasswordModal from "../popupScreen/passwordModal";
 import SuccessModal from "../popupScreen/successModal";
-// import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 interface StockTableProps {
   data: StockItem[];
@@ -39,9 +38,7 @@ export default function StockTable({
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [stockToDeactivate, setStockToDeactivate] = useState<StockItem | null>(null);
-  const [dropdownPosition, setDropdownPosition] = useState<'top' | 'bottom'>('bottom');
   const menuRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
-  const dropdownRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const [isAllSelected, setIsAllSelected] = useState(false);
 
   useEffect(() => {
@@ -103,30 +100,37 @@ export default function StockTable({
     setShowPasswordModal(true);
   };
 
-  const handleDeactivateConfirm = async (password: string) => {
+  const handleDeactivateConfirm = async () => {
     if (!stockToDeactivate) return;
     
     try {
+      setShowPasswordModal(false);
       await onDeactivateStock(stockToDeactivate);
       
-      // Update local data to remove the deactivated item
+      // Show success modal
+      setShowSuccessModal(true);
+      
+      // Update local data
       setLocalData(prevData => 
         prevData.filter(item => item.id !== stockToDeactivate.id)
       );
       
-      setShowPasswordModal(false);
-      setShowSuccessModal(true);
       setOpenMenuId(null);
+      
+      // Auto-hide success message after 2 seconds
+      setTimeout(() => {
+        setShowSuccessModal(false);
+        setStockToDeactivate(null);
+      }, 2000);
     } catch (error) {
       console.error('Failed to deactivate stock:', error);
-      // Handle error appropriately
-    } finally {
       setStockToDeactivate(null);
     }
   };
 
   const handleSuccessModalClose = () => {
     setShowSuccessModal(false);
+    setStockToDeactivate(null);
   };
 
   const handleSelectAll = () => {
@@ -155,7 +159,7 @@ export default function StockTable({
   }
 
   return (
-    <div className="w-full">
+    <div className="relative">
       <ViewStockModal
         isOpen={isViewModalOpen}
         onClose={handleCloseViewModal}
@@ -227,11 +231,12 @@ export default function StockTable({
                         </td>
                       )}
                       <td className="px-4 py-4">
-                        <div className="h-12 w-12 flex-shrink-0">
-                          <img
+                        <div className="h-12 w-12 flex-shrink-0 relative">
+                          <Image
                             src={item.image || "/images/placeholder.png"}
                             alt={item.name}
-                            className="h-12 w-12 object-cover rounded-md"
+                            fill
+                            className="object-cover rounded-md"
                           />
                         </div>
                       </td>

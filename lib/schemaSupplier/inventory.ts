@@ -7,7 +7,7 @@ export const StoreSchema = z.object({
   location: z.string(),
   businessSectionName: z.string().optional(),
   description: z.string(),
-  image: z.instanceof(File).optional(),
+  image: z.union([z.instanceof(File), z.string()]).optional(),
 });
 
 export const StoreCreateSchema = z.object({
