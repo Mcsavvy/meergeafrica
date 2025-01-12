@@ -26,7 +26,7 @@ const StockScreen = () => {
   const [selectedStockItems, setSelectedStockItems] = useState<string[]>([]);
   const [selectedStoreId, setSelectedStoreId] = useState<string>("");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [filteredStockItems, setFilteredStockItems] = useState([]);
+  const [filteredStockItems, setFilteredStockItems] = useState<StockItem[]>([]);
 
   const { stores, stockItems, deactivateStockItem } = useInventoryStore();
   const { slug } = useParams();
@@ -37,7 +37,8 @@ const StockScreen = () => {
     setMounted(true);
     // Set default store to Kadd Store
     if (stores.length > 0) {
-      const defaultStore = stores.find(store => store.id === "default") || stores[0];
+      const defaultStore =
+        stores.find((store) => store.id === "default") || stores[0];
       setSelectedStoreId(defaultStore.id);
     }
 
@@ -60,22 +61,24 @@ const StockScreen = () => {
 
   const handleDeactivateStock = async (stock: StockItem) => {
     try {
-      await deactivateStockItem(stock.id, '123456');
+      await deactivateStockItem(stock.id, "123456");
       setShowSuccessModal(true);
       setTimeout(() => {
         setShowSuccessModal(false);
       }, 2000);
     } catch (error) {
-      console.error('Failed to deactivate stock:', error);
-      toast.error('Failed to deactivate stock item');
+      console.error("Failed to deactivate stock:", error);
+      toast.error("Failed to deactivate stock item");
     }
   };
 
   // Filter stock items by store and search query
   useEffect(() => {
-    const filtered = stockItems.filter(item => {
+    const filtered = stockItems.filter((item) => {
       if (!selectedStoreId && !isAllStockPage) return false;
-      const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesSearch = item.name
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
       const matchesStore = isAllStockPage || item.store === selectedStoreId;
       const isActive = item.isActive !== false;
       return matchesSearch && matchesStore && isActive;
@@ -100,16 +103,16 @@ const StockScreen = () => {
 
       {selectedStoreId && (
         <CurrentStoreProvider storeId={selectedStoreId}>
-          <CreateStockModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+          <CreateStockModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+          />
         </CurrentStoreProvider>
       )}
       <div className="mb-6">
         <div className="flex items-center space-x-4">
           {!isAllStockPage && (
-            <Select
-              value={selectedStoreId}
-              onValueChange={setSelectedStoreId}
-            >
+            <Select value={selectedStoreId} onValueChange={setSelectedStoreId}>
               <SelectTrigger className="w-[200px]">
                 <SelectValue placeholder="Select Store" />
               </SelectTrigger>
@@ -134,13 +137,13 @@ const StockScreen = () => {
 
       <StockTable
         data={filteredStockItems}
-        stores={stores.map(store => ({
+        stores={stores.map((store) => ({
           ...store,
-          image: store.image 
-            ? store.image instanceof File 
+          image: store.image
+            ? store.image instanceof File
               ? URL.createObjectURL(store.image)
               : store.image
-            : undefined
+            : undefined,
         }))}
         showSelection={true}
         selectedItems={selectedStockItems}

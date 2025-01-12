@@ -24,18 +24,21 @@ export const StockItemSchema = z.object({
   name: z.string(),
   store: z.string(),
   image: z.instanceof(File).optional(),
-  expirationDate: z.object({
-    month: z.number(),
-    year: z.number(),
-  }).optional(),
-  expiryDate: z.string()
+  expirationDate: z
+    .object({
+      month: z.number(),
+      year: z.number(),
+    })
+    .optional(),
+  expiryDate: z
+    .string()
     .refine((val) => val && val.length > 0, "Expiry date is required")
     .refine(
       (val) => /^\d{2}\/\d{4}$/.test(val),
       "Invalid date format. Use MM/YYYY"
     )
     .refine((val) => {
-      const [month, year] = val.split('/').map(Number);
+      const [month, year] = val.split("/").map(Number);
       if (month < 1 || month > 12) return false;
       const currentDate = new Date();
       const inputDate = new Date(year, month - 1);
@@ -54,26 +57,31 @@ export const StockItemSchema = z.object({
 });
 
 export const StockItemCreateSchema = z.object({
-  name: z.string()
+  name: z
+    .string()
     .refine((val) => val && val.length > 0, "Stock item name is required"),
   store: z.string(),
-  image: z.instanceof(File).optional()
+  image: z
+    .instanceof(File)
+    .optional()
     .refine(
-      (file) => !file || (file.size <= 5 * 1024 * 1024), 
+      (file) => !file || file.size <= 5 * 1024 * 1024,
       "Image must be less than 5MB"
     )
     .refine(
-      (file) => !file || ['image/jpeg', 'image/png', 'image/webp'].includes(file.type),
+      (file) =>
+        !file || ["image/jpeg", "image/png", "image/webp"].includes(file.type),
       "Only JPEG, PNG and WebP images are supported"
     ),
-  expiryDate: z.string()
+  expiryDate: z
+    .string()
     .refine((val) => val && val.length > 0, "Expiry date is required")
     .refine(
       (val) => /^\d{2}\/\d{4}$/.test(val),
       "Invalid date format. Use MM/YYYY"
     )
     .refine((val) => {
-      const [month, year] = val.split('/').map(Number);
+      const [month, year] = val.split("/").map(Number);
       if (month < 1 || month > 12) return false;
       const currentDate = new Date();
       const inputDate = new Date(year, month - 1);
@@ -82,38 +90,59 @@ export const StockItemCreateSchema = z.object({
   measuringUnit: z.string(),
   category: z.string(),
   stockType: z.string(),
-  lowStockThreshold: z.number()
-    .refine((val) => val >= 0, "Low stock threshold must be greater than or equal to 0"),
-  purchasePrice: z.number()
-    .refine((val) => val >= 0, "Purchase price must be greater than or equal to 0"),
-  quantity: z.number()
+  lowStockThreshold: z
+    .number()
+    .refine(
+      (val) => val >= 0,
+      "Low stock threshold must be greater than or equal to 0"
+    ),
+  purchasePrice: z
+    .number()
+    .refine(
+      (val) => val >= 0,
+      "Purchase price must be greater than or equal to 0"
+    ),
+  quantity: z
+    .number()
     .refine((val) => val >= 0, "Quantity must be greater than or equal to 0"),
 });
 
 export const StockItemUpdateSchema = z.object({
-  name: z.string()
+  name: z
+    .string()
     .refine((val) => val && val.length > 0, "Stock item name is required")
     .optional(),
   store: z.string().optional(),
-  lowStockThreshold: z.number()
-    .refine((val) => val >= 0, "Low stock threshold must be greater than or equal to 0")
+  lowStockThreshold: z
+    .number()
+    .refine(
+      (val) => val >= 0,
+      "Low stock threshold must be greater than or equal to 0"
+    )
     .optional(),
-  purchasePrice: z.number()
-    .refine((val) => val >= 0, "Purchase price must be greater than or equal to 0")
+  purchasePrice: z
+    .number()
+    .refine(
+      (val) => val >= 0,
+      "Purchase price must be greater than or equal to 0"
+    )
     .optional(),
   image: z.union([z.instanceof(File), z.string()]).optional(),
-  expirationDate: z.object({
-    month: z.number(),
-    year: z.number(),
-  }).optional(),
-  expiryDate: z.string()
+  expirationDate: z
+    .object({
+      month: z.number(),
+      year: z.number(),
+    })
+    .optional(),
+  expiryDate: z
+    .string()
     .refine((val) => val && val.length > 0, "Expiry date is required")
     .refine(
       (val) => /^\d{2}\/\d{4}$/.test(val),
       "Invalid date format. Use MM/YYYY"
     )
     .refine((val) => {
-      const [month, year] = val.split('/').map(Number);
+      const [month, year] = val.split("/").map(Number);
       if (month < 1 || month > 12) return false;
       const currentDate = new Date();
       const inputDate = new Date(year, month - 1);
@@ -130,3 +159,10 @@ export type StockItem = Omit<z.infer<typeof StockItemSchema>, "image"> & {
 };
 export type StockItemCreate = z.infer<typeof StockItemCreateSchema>;
 export type StockItemUpdate = z.infer<typeof StockItemUpdateSchema>;
+
+// Helper type to ensure type safety when creating a new StockItem
+export type StockItemWithMetadata = {
+  createdAt: string;
+  isActive: boolean;
+  id: string;
+};

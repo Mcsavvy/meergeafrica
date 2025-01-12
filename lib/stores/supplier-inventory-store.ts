@@ -5,7 +5,7 @@ import {
   StockItemCreate,
   StockItemUpdate,
   StockItemWithMetadata,
-} from "../schema/inventory";
+} from "../schemaSupplier/inventory";
 import { create } from "zustand";
 import { convertToBase64 } from "../utils";
 
@@ -29,45 +29,48 @@ export type InventoryActions = {
 
 export type InventoryStore = InventoryState & InventoryActions;
 
-const STORAGE_KEY = 'supplier_inventory';
+const STORAGE_KEY = "supplier_inventory";
 
 const loadPersistedState = (): InventoryState => {
-  if (typeof window === 'undefined') return defaultInventoryState;
-  
+  if (typeof window === "undefined") return defaultInventoryState;
+
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (!stored) return defaultInventoryState;
-    
+
     const parsed = JSON.parse(stored);
     return {
       stores: parsed.stores || [],
       stockItems: parsed.stockItems || [],
     };
   } catch (error) {
-    console.error('Failed to load persisted inventory state:', error);
+    console.error("Failed to load persisted inventory state:", error);
     return defaultInventoryState;
   }
 };
 
 const persistState = (state: InventoryState) => {
-  if (typeof window === 'undefined') return;
-  
+  if (typeof window === "undefined") return;
+
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({
-      stores: state.stores,
-      stockItems: state.stockItems,
-    }));
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        stores: state.stores,
+        stockItems: state.stockItems,
+      })
+    );
   } catch (error) {
-    console.error('Failed to persist inventory state:', error);
+    console.error("Failed to persist inventory state:", error);
   }
 };
 
 const clearPersistedState = () => {
-  if (typeof window === 'undefined') return;
+  if (typeof window === "undefined") return;
   try {
     localStorage.removeItem(STORAGE_KEY);
   } catch (error) {
-    console.error('Failed to clear inventory state:', error);
+    console.error("Failed to clear inventory state:", error);
   }
 };
 
@@ -75,31 +78,37 @@ const clearPersistedState = () => {
 clearPersistedState();
 
 const defaultInventoryState: InventoryState = {
-  stores: [{
-    id: "default",
-    name: "Kadd Store",
-    description: "Main store for general inventory",
-    location: "Main Branch"
-  }],
+  stores: [
+    {
+      id: "default",
+      name: "Kadd Store",
+      description: "Main store for general inventory",
+      location: "Main Branch",
+    },
+  ],
   stockItems: [],
 };
 
 export const useInventoryStore = create<InventoryStore>((set, get) => {
   const initialState = loadPersistedState();
-  const hasDefaultStore = initialState.stores.some(store => store.id === "default");
-  
-  const state = hasDefaultStore ? initialState : {
-    ...initialState,
-    stores: [
-      ...initialState.stores,
-      {
-        id: "default",
-        name: "Kadd Store",
-        description: "Main store for general inventory",
-        location: "Main Branch"
-      }
-    ]
-  };
+  const hasDefaultStore = initialState.stores.some(
+    (store) => store.id === "default"
+  );
+
+  const state = hasDefaultStore
+    ? initialState
+    : {
+        ...initialState,
+        stores: [
+          ...initialState.stores,
+          {
+            id: "default",
+            name: "Kadd Store",
+            description: "Main store for general inventory",
+            location: "Main Branch",
+          },
+        ],
+      };
 
   return {
     ...state,
@@ -112,7 +121,7 @@ export const useInventoryStore = create<InventoryStore>((set, get) => {
             ? await convertToBase64(data.image as File)
             : undefined,
         };
-        
+
         set((state) => {
           const newState = {
             stores: [...state.stores, newStore],
@@ -121,11 +130,11 @@ export const useInventoryStore = create<InventoryStore>((set, get) => {
           persistState(newState);
           return newState;
         });
-        
+
         return newStore;
       } catch (error) {
-        console.error('Failed to create store:', error);
-        throw new Error('Failed to create store. Please try again.');
+        console.error("Failed to create store:", error);
+        throw new Error("Failed to create store. Please try again.");
       }
     },
     searchStores: async (query: string) => {
@@ -141,15 +150,13 @@ export const useInventoryStore = create<InventoryStore>((set, get) => {
           isActive: true,
           createdAt: new Date().toISOString(),
         };
-        
+
         const newStockItem: StockItem = {
           ...data,
           ...metadata,
-          image: data.image
-            ? data.image
-            : undefined,
+          image: data.image ? await convertToBase64(data.image) : undefined,
         };
-        
+
         set((state) => {
           const newState = {
             stores: state.stores,
@@ -158,25 +165,30 @@ export const useInventoryStore = create<InventoryStore>((set, get) => {
           persistState(newState);
           return newState;
         });
-        
+
         return newStockItem;
       } catch (error) {
-        console.error('Failed to create stock item:', error);
-        throw new Error('Failed to create stock item. Please try again.');
+        console.error("Failed to create stock item:", error);
+        throw new Error("Failed to create stock item. Please try again.");
       }
     },
     updateStockItem: async (stockItem: StockItem, update: StockItemUpdate) => {
       try {
         set((state) => {
-          const index = state.stockItems.findIndex((item) => item.id === stockItem.id);
+          const index = state.stockItems.findIndex(
+            (item) => item.id === stockItem.id
+          );
           if (index === -1) {
-            throw new Error('Stock item not found');
+            throw new Error("Stock item not found");
           }
 
           // Convert File to string if present in the update
           const processedUpdate = {
             ...update,
-            image: update.image instanceof File ? URL.createObjectURL(update.image) : update.image,
+            image:
+              update.image instanceof File
+                ? URL.createObjectURL(update.image)
+                : update.image,
           };
 
           const updatedItem = {
@@ -196,8 +208,8 @@ export const useInventoryStore = create<InventoryStore>((set, get) => {
           return newState;
         });
       } catch (error) {
-        console.error('Failed to update stock item:', error);
-        throw new Error('Failed to update stock item. Please try again.');
+        console.error("Failed to update stock item:", error);
+        throw new Error("Failed to update stock item. Please try again.");
       }
     },
     searchStockItems: async (query: string) => {
@@ -211,27 +223,29 @@ export const useInventoryStore = create<InventoryStore>((set, get) => {
         set((state) => {
           const newState = {
             stores: state.stores,
-            stockItems: state.stockItems.filter((item) => item.id !== stockItemId),
+            stockItems: state.stockItems.filter(
+              (item) => item.id !== stockItemId
+            ),
           };
           persistState(newState);
           return newState;
         });
       } catch (error) {
-        console.error('Failed to delete stock item:', error);
-        throw new Error('Failed to delete stock item. Please try again.');
+        console.error("Failed to delete stock item:", error);
+        throw new Error("Failed to delete stock item. Please try again.");
       }
     },
     deactivateStockItem: async (id: string, password: string) => {
       // Validate password - in a real app, this would be done on the server
-      if (password !== '123456') {
-        throw new Error('Invalid password');
+      if (password !== "123456") {
+        throw new Error("Invalid password");
       }
 
       try {
         set((state) => {
-          const index = state.stockItems.findIndex(item => item.id === id);
+          const index = state.stockItems.findIndex((item) => item.id === id);
           if (index === -1) {
-            throw new Error('Stock item not found');
+            throw new Error("Stock item not found");
           }
 
           const deactivationDate = new Date().toISOString();
@@ -243,20 +257,20 @@ export const useInventoryStore = create<InventoryStore>((set, get) => {
             deactivatedAt: deactivationDate,
             lastKnownQuantity: newStockItems[index].quantity,
             quantity: 0,
-            deactivationReason: 'Manual deactivation by user'
+            deactivationReason: "Manual deactivation by user",
           };
 
           const newState = {
             ...state,
-            stockItems: newStockItems
+            stockItems: newStockItems,
           };
           persistState(newState);
           return newState;
         });
       } catch (error) {
-        console.error('Failed to deactivate stock item:', error);
-        throw new Error('Failed to deactivate stock item. Please try again.');
+        console.error("Failed to deactivate stock item:", error);
+        throw new Error("Failed to deactivate stock item. Please try again.");
       }
-    }
-  }
+    },
+  };
 });

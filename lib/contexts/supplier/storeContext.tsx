@@ -1,6 +1,6 @@
 // contexts/supplier/storeContext.tsx
 import React, { createContext, useState, useContext, useEffect } from "react";
-import { useInventoryStore } from './inventory-context'; // Import the useInventoryStore hook
+import { useInventoryStore } from "./inventory-context"; // Import the useInventoryStore hook
 
 export interface Store {
   id: string;
@@ -28,8 +28,9 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const storedStoreId = localStorage.getItem("currentStoreId");
     if (storedStoreId) {
-      const store = stores.find(s => s.id === storedStoreId);
+      const store = stores.find((s) => s.id === storedStoreId);
       if (store) {
+        // @ts-expect-error - we know store is not null
         setCurrentStore(store);
       } else {
         localStorage.removeItem("currentStoreId");

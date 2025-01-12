@@ -1,8 +1,8 @@
 import { z } from "zod";
-import { SupplierRegisterFormSchema } from "@/lib/zod/forms/register-supplier";
+import { SupplierRegisterSchema } from "@/types/supplier-register-schema";
 
 export async function registerSupplier(
-  data: z.infer<typeof SupplierRegisterFormSchema>
+  data: z.infer<typeof SupplierRegisterSchema>
 ) {
   return {
     success: true,
