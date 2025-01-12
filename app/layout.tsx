@@ -1,10 +1,7 @@
 "use client";
 
 import "./globals.css";
-import { Inter } from "next/font/google";
 import { Toaster } from "sonner";
-
-const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({
   children,
@@ -13,7 +10,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className="">
         {children}
         <Toaster richColors position="top-right" />
       </body>
