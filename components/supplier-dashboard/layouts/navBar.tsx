@@ -2,7 +2,6 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { Menu, Search, Bell, User2, ChevronDown } from "lucide-react";
-import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { SignOutModal } from "../popupScreen/sign-out-modal";
 
@@ -14,6 +13,7 @@ interface NavBarProps {
 const NavBar: React.FC<NavBarProps> = ({ onMenuClick, currentSection }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [showSignOutModal, setShowSignOutModal] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -102,6 +102,7 @@ const NavBar: React.FC<NavBarProps> = ({ onMenuClick, currentSection }) => {
                     onClick={() => {
                       setIsDropdownOpen(false);
                       setIsSearchOpen(false);
+                      setShowSignOutModal(true);
                     }}
                   >
                     Sign out
@@ -135,6 +136,11 @@ const NavBar: React.FC<NavBarProps> = ({ onMenuClick, currentSection }) => {
           </h1>
         </div>
       </div>
+      
+      <SignOutModal 
+        isOpen={showSignOutModal} 
+        onClose={() => setShowSignOutModal(false)} 
+      />
     </nav>
   );
 };
