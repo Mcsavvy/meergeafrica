@@ -2,12 +2,10 @@
 
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { StockItem, Store } from "@/lib/schemaSupplier/inventory";
-import { MoreVertical, Eye, PowerOff } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import ViewStockModal from "../popupScreen/viewStock";
-import PasswordModal from "../popupScreen/passwordModal";
-import SuccessModal from "../popupScreen/successModal";
+import ViewStockModal from "./viewStock";
 import Image from "next/image";
+import { Eye, PowerOff, MoreVertical } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface StockTableProps {
   data: StockItem[];
@@ -15,9 +13,9 @@ interface StockTableProps {
   selectedItems?: string[];
   onItemSelect?: (id: string) => void;
   showSelection?: boolean;
-  onDeactivateStock?: (stock: StockItem) => void;
   onViewStock?: (stock: StockItem) => void;
   onSelectionChange?: (ids: string[]) => void;
+  onDeactivateStock?: (stock: StockItem) => void;
 }
 
 export default function StockTable({ 
@@ -26,18 +24,15 @@ export default function StockTable({
   selectedItems = [], 
   onItemSelect = () => {}, 
   showSelection = false,
-  onDeactivateStock = () => {},
   onViewStock = () => {},
-  onSelectionChange = () => {}
+  onSelectionChange = () => {},
+  onDeactivateStock = () => {}
 }: StockTableProps) {
   const [mounted, setMounted] = useState(false);
   const [localData, setLocalData] = useState<StockItem[]>([]);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [selectedStock, setSelectedStock] = useState<StockItem | null>(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-  const [showPasswordModal, setShowPasswordModal] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [stockToDeactivate, setStockToDeactivate] = useState<StockItem | null>(null);
   const menuRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const [isAllSelected, setIsAllSelected] = useState(false);
 
@@ -69,25 +64,25 @@ export default function StockTable({
 
   // Group stocks by store
   const stocksByStore = useMemo(() => {
-    const grouped: { [key: string]: StockItem[] } = {};
-    localData.forEach(stock => {
-      if (!grouped[stock.store]) {
-        grouped[stock.store] = [];
+    return localData.reduce((acc: { [key: string]: StockItem[] }, stock) => {
+      const storeId = stock.store;
+      if (!acc[storeId]) {
+        acc[storeId] = [];
       }
-      grouped[stock.store].push(stock);
-    });
-    return grouped;
+      acc[storeId].push(stock);
+      return acc;
+    }, {});
   }, [localData]);
 
   const toggleMenu = (id: string) => {
     setOpenMenuId(openMenuId === id ? null : id);
   };
 
-  const handleViewStock = (item: StockItem) => {
-    setSelectedStock(item);
+  const handleViewStock = (stock: StockItem) => {
+    setSelectedStock(stock);
     setIsViewModalOpen(true);
     setOpenMenuId(null);
-    onViewStock(item);
+    onViewStock(stock);
   };
 
   const handleCloseViewModal = () => {
@@ -96,41 +91,8 @@ export default function StockTable({
   };
 
   const handleDeactivateClick = (stock: StockItem) => {
-    setStockToDeactivate(stock);
-    setShowPasswordModal(true);
-  };
-
-  const handleDeactivateConfirm = async () => {
-    if (!stockToDeactivate) return;
-    
-    try {
-      setShowPasswordModal(false);
-      await onDeactivateStock(stockToDeactivate);
-      
-      // Show success modal
-      setShowSuccessModal(true);
-      
-      // Update local data
-      setLocalData(prevData => 
-        prevData.filter(item => item.id !== stockToDeactivate.id)
-      );
-      
-      setOpenMenuId(null);
-      
-      // Auto-hide success message after 2 seconds
-      setTimeout(() => {
-        setShowSuccessModal(false);
-        setStockToDeactivate(null);
-      }, 2000);
-    } catch (error) {
-      console.error('Failed to deactivate stock:', error);
-      setStockToDeactivate(null);
-    }
-  };
-
-  const handleSuccessModalClose = () => {
-    setShowSuccessModal(false);
-    setStockToDeactivate(null);
+    onDeactivateStock(stock);
+    setOpenMenuId(null);
   };
 
   const handleSelectAll = () => {
@@ -170,14 +132,14 @@ export default function StockTable({
         if (storeStocks.length === 0) return null;
 
         return (
-          <div key={store.id} className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+          <div key={store.id} className="bg-white rounded-lg border border-gray-200 overflow-visible">
             <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
               <h3 className="text-lg font-semibold text-gray-900">{store.name}</h3>
               {store.businessSectionName && (
                 <p className="text-sm text-gray-500">{store.businessSectionName}</p>
               )}
             </div>
-            <div className="overflow-x-auto">
+            <div className="overflow-visible">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-white">
                   <tr>
@@ -265,17 +227,14 @@ export default function StockTable({
                             menuRefs.current[item.id] = el;
                           }}
                         >
-                          <Button
-                            variant="ghost"
-                            className="h-8 w-8 p-0 hover:bg-gray-100 rounded-full"
-                            onClick={() => toggleMenu(item.id)}
-                          >
-                            <MoreVertical className="h-4 w-4" />
-                          </Button>
                           {openMenuId === item.id && (
                             <div 
-                              className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50"
-                              style={{ top: 'auto', bottom: '100%', marginBottom: '0.5rem' }}
+                              className="absolute right-0 w-40 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-[100]"
+                              style={{ 
+                                bottom: 'calc(100% + 0.5rem)',
+                                right: '0',
+                                transform: 'translateY(-2px)'
+                              }}
                             >
                               <button
                                 onClick={() => handleViewStock(item)}
@@ -295,6 +254,13 @@ export default function StockTable({
                               )}
                             </div>
                           )}
+                          <Button
+                            variant="ghost"
+                            className="h-8 w-8 p-0 hover:bg-gray-100 rounded-full"
+                            onClick={() => toggleMenu(item.id)}
+                          >
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
                         </div>
                       </td>
                     </tr>
@@ -305,15 +271,6 @@ export default function StockTable({
           </div>
         );
       })}
-      <PasswordModal
-        isOpen={showPasswordModal}
-        onClose={() => setShowPasswordModal(false)}
-        onConfirm={handleDeactivateConfirm}
-      />
-      <SuccessModal
-        isOpen={showSuccessModal}
-        onClose={handleSuccessModalClose}
-      />
     </div>
   );
 }

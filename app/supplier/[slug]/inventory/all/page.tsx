@@ -2,13 +2,13 @@
 
 import React, { useState, useEffect } from "react";
 import { useInventoryStore } from "@/lib/stores/supplier-inventory-store";
-import StockTable from "@/components/supplier-dashboard/layouts/stockTable";
+import StockTable from "@/app/supplier/[slug]/inventory/components/stockTable";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Building2, Search, Menu } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import StockViewModal from "@/components/supplier-dashboard/popupScreen/stockViewModal";
+import StockViewModal from "@/app/supplier/[slug]/inventory/components/stockViewModal";
 import { StockItem } from "@/lib/schemaSupplier/inventory";
 import { toast } from "sonner";
 

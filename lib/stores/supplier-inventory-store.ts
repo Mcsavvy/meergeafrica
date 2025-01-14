@@ -9,6 +9,7 @@ import {
 import { create } from "zustand";
 import { convertToBase64 } from "../utils";
 
+
 export type InventoryState = {
   stores: Store[];
   stockItems: StockItem[];
@@ -25,6 +26,7 @@ export type InventoryActions = {
   searchStockItems: (query: string) => Promise<StockItem[]>;
   deleteStockItem: (stockItemId: StockItem["id"]) => Promise<void>;
   deactivateStockItem: (id: string, password: string) => Promise<void>;
+  deactivateStore: (id: string) => Promise<void>;
 };
 
 export type InventoryStore = InventoryState & InventoryActions;
@@ -84,6 +86,7 @@ const defaultInventoryState: InventoryState = {
       name: "Kadd Store",
       description: "Main store for general inventory",
       location: "Main Branch",
+      isActive: true,
     },
   ],
   stockItems: [],
@@ -106,6 +109,7 @@ export const useInventoryStore = create<InventoryStore>((set, get) => {
             name: "Kadd Store",
             description: "Main store for general inventory",
             location: "Main Branch",
+            isActive: true,
           },
         ],
       };
@@ -117,6 +121,7 @@ export const useInventoryStore = create<InventoryStore>((set, get) => {
         const newStore: Store = {
           ...data,
           id: crypto.randomUUID(),
+          isActive: true,
           image: data.image
             ? await convertToBase64(data.image as File)
             : undefined,
@@ -271,6 +276,24 @@ export const useInventoryStore = create<InventoryStore>((set, get) => {
         console.error("Failed to deactivate stock item:", error);
         throw new Error("Failed to deactivate stock item. Please try again.");
       }
+    },
+    deactivateStore: async (id: string) => {
+      const state = get();
+      const storeIndex = state.stores.findIndex((store) => store.id === id);
+      
+      if (storeIndex === -1) {
+        throw new Error("Store not found");
+      }
+
+      // Update the store's status to inactive
+      const updatedStores = [...state.stores];
+      updatedStores[storeIndex] = {
+        ...updatedStores[storeIndex],
+        isActive: false,
+      };
+
+      set({ stores: updatedStores });
+      await persistState({ ...state, stores: updatedStores });
     },
   };
 });
