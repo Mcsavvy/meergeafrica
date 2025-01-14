@@ -8,6 +8,7 @@ export const StoreSchema = z.object({
   businessSectionName: z.string().optional(),
   description: z.string(),
   image: z.union([z.instanceof(File), z.string()]).optional(),
+  isActive: z.boolean().optional().default(true),
 });
 
 export const StoreCreateSchema = z.object({

@@ -7,7 +7,7 @@ export interface Store {
   name: string;
   businessSectionName?: string;
   description: string;
-  image?: string;
+  image?: string | File;
   location?: string;
 }
 
@@ -30,7 +30,6 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
     if (storedStoreId) {
       const store = stores.find((s) => s.id === storedStoreId);
       if (store) {
-        // @ts-expect-error - we know store is not null
         setCurrentStore(store);
       } else {
         localStorage.removeItem("currentStoreId");
